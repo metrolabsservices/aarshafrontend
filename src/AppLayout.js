@@ -2,19 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import {
   DesktopOutlined,
-  FileOutlined,
-  PieChartOutlined,
-  TeamOutlined,
   BellOutlined,
-  MailOutlined,
-  AppstoreOutlined,
-  SettingOutlined,
-  DashboardTwoTone,
   UsergroupDeleteOutlined,
-  DashboardOutlined,
   DeploymentUnitOutlined,
   BookOutlined,
   FileDoneOutlined,
+  HomeOutlined,
 } from "@ant-design/icons";
 import styled from "styled-components";
 import {
@@ -37,7 +30,10 @@ const Container = styled.div`
     width: 100%;
     height: auto;
     padding: 3px 15px;
-    background-color: blue;
+    background: rgba(166, 255, 156, 0.39);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(6.1px);
+    -webkit-backdrop-filter: blur(6.1px);
   }
 
   /* & .contentContainer1 {
@@ -66,7 +62,7 @@ const items = [
   {
     id: 1,
     label: "Home",
-    icon: <DashboardOutlined />,
+    icon: <HomeOutlined />,
     route: "",
     disabled: false,
   },
@@ -113,7 +109,7 @@ export const AppLayout = () => {
     height: "auto",
   };
   const containerBox = {
-    // padding: "15px",
+    padding: isDisplayFooter ? "0px" : "15px",
     height: isDisplayFooter ? "calc(100vh - 122px)" : "calc(100vh - 70px)",
     backgroundColor: "whitesmoke",
   };
@@ -168,7 +164,7 @@ export const AppLayout = () => {
             </Space>
           </Flex>
         </Header>
-        <Layout>
+        <Layout style={{ height: "auto" }}>
           {isDisplayFooter ? (
             ""
           ) : (
@@ -191,12 +187,13 @@ export const AppLayout = () => {
           <Content style={containerBox}>
             <div
               style={{
-                height: isDisplayFooter ? "100%" : "80vh",
-                margin: isDisplayFooter ? "0px" : "15px",
+                height: "100%",
                 padding: "10px",
                 backgroundColor: "white",
                 borderRadius: isDisplayFooter ? "0%" : "10px",
-                boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
+                boxShadow: isDisplayFooter
+                  ? "rgba(27, 31, 35, 0.04) 0px 1px 0px, rgba(255, 255, 255, 0.25) 0px 1px 0px inset"
+                  : "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
               }}
             >
               <Outlet />
@@ -209,6 +206,7 @@ export const AppLayout = () => {
               {items.map((i) => (
                 <Button
                   // type="text"
+                  key={i.id}
                   shape="circle"
                   onClick={() => nav(i.route)}
                 >

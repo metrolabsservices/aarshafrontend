@@ -1,10 +1,10 @@
 import { HashRouter, Route, Routes } from "react-router-dom";
 import { AppLayout } from "./AppLayout";
 import { Dashboard } from "./Pages/Dashboard";
-import { Studentindex } from "./Pages/Studentindex";
 import { Expensesindex } from "./Pages/Expensesindex";
 import { Libraryindex } from "./Pages/Libraryindex";
 import { Questionbankindex } from "./Pages/Questionbankindex";
+import { Studentindex } from "./Pages/StudentsDivison/Studentindex";
 
 export const Router = () => {
   return (
