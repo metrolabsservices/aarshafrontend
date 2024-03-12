@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import {
   DesktopOutlined,
+  SignatureOutlined,
   BellOutlined,
   UsergroupDeleteOutlined,
   DeploymentUnitOutlined,
   BookOutlined,
   FileDoneOutlined,
   HomeOutlined,
+  LogoutOutlined,
+  EditFilled,
 } from "@ant-design/icons";
 import styled from "styled-components";
 import {
@@ -19,7 +22,17 @@ import {
   Menu,
   Space,
   theme,
+  Typography,
+  Image,
+  Popover,
+  Tooltip,
+  Form,
+  List,
+  Modal,
+  Input,
 } from "antd";
+import { useGuard } from "./dbHub/GuardContext";
+import { MedialFiles } from "./Utility/MediaFiles";
 const { Header, Content, Footer, Sider } = Layout;
 
 const Container = styled.div`
@@ -44,7 +57,7 @@ const Container = styled.div`
   & .footerContainer {
     padding: 10px 0px;
     text-align: center;
-    background-color: yellow;
+    background-color: #e9ffe6;
   }
 
   & .ant-menu-light > .ant-menu,
@@ -56,6 +69,15 @@ const Container = styled.div`
     background: #14b10b;
     color: white;
   }
+
+  & .profileBtn {
+    border-radius: 50%;
+    border: none;
+    padding: 0%;
+  }
+  & .loginProfileBox {
+    /* width: 80px; */
+  }
 `;
 
 const items = [
@@ -63,14 +85,14 @@ const items = [
     id: 1,
     label: "Home",
     icon: <HomeOutlined />,
-    route: "",
+    route: "main/home",
     disabled: false,
   },
   {
     id: 2,
     label: "Student.Mng",
     icon: <UsergroupDeleteOutlined />,
-    route: "Home_B",
+    route: "studentpage",
     disabled: false,
   },
   {
@@ -97,13 +119,16 @@ const items = [
 ];
 
 export const AppLayout = () => {
-  const nav = new useNavigate();
+  const nav = useNavigate();
+  const { dbInfo } = useGuard();
   const [collapsed, setCollapsed] = useState(false);
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
   });
+  const [isProfileOpened, setIsProfileOpened] = useState(false);
   const [isDisplayFooter, setIsDisplayFooter] = useState(false);
+  const [isupdateModalopen, setIsupdateModalopen] = useState(false);
   const headerContainerInside = {
     //   width: "100vw",
     height: "auto",
@@ -122,6 +147,7 @@ export const AppLayout = () => {
     setIsDisplayFooter(window.innerWidth < 577);
     setCollapsed(window.innerWidth < 769);
   };
+  console.log(dbInfo);
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
@@ -133,11 +159,43 @@ export const AppLayout = () => {
   }, []);
 
   const routerRoute = (x) => {
+    console.log(x);
     x = x.key;
     x = "/" + items[parseInt(x.charAt(x.length - 1))].route;
     console.log(x);
     return nav(x);
   };
+  const loginProfileBox = (
+    <Container>
+      <Typography.Title level={5} style={{ margin: "10px 0px" }}>
+        Super Admin
+      </Typography.Title>
+      <List
+        className="loginProfileBox"
+        dataSource={[
+          { title: "Update", icon: <SignatureOutlined /> },
+          { title: "Signout", icon: <LogoutOutlined /> },
+        ]}
+        renderItem={(i) => (
+          <List.Item
+            onClick={() => {
+              if (i.title === "Update") {
+                setIsupdateModalopen(!isupdateModalopen);
+              } else {
+                nav("/");
+              }
+              setIsProfileOpened(false);
+            }}
+          >
+            <Space>
+              {i.icon}
+              <Typography.Text>{i.title}</Typography.Text>
+            </Space>
+          </List.Item>
+        )}
+      />
+    </Container>
+  );
   return (
     <Container>
       <Layout>
@@ -148,7 +206,7 @@ export const AppLayout = () => {
             align="center"
           >
             <Avatar
-              src="/logo.svg"
+              src={MedialFiles.icons.superadmin}
               size={{
                 xs: 50,
                 sm: 55,
@@ -160,7 +218,24 @@ export const AppLayout = () => {
             />
             <Space wrap={true} align="center" size="large">
               <BellOutlined style={{ fontSize: "20px" }} />
-              <Button shape="circle" icon={<DesktopOutlined />} />
+              <Popover
+                trigger="click"
+                className="popoverProp"
+                content={loginProfileBox}
+                open={isProfileOpened}
+              >
+                <Button
+                  className="profileBtn"
+                  onClick={() => setIsProfileOpened(!isProfileOpened)}
+                  icon={
+                    <Image
+                      src={MedialFiles.icons.developer}
+                      alt="Prof"
+                      preview={false}
+                    />
+                  }
+                />
+              </Popover>
             </Space>
           </Flex>
         </Header>
@@ -219,6 +294,24 @@ export const AppLayout = () => {
           ""
         )}
       </Layout>
+      <Modal
+        title="Update Profile"
+        centered
+        open={isupdateModalopen}
+        onCancel={() => setIsupdateModalopen(!isupdateModalopen)}
+      >
+        <Form size="small">
+          <Form.Item label="Name">
+            <Input />
+          </Form.Item>
+          <Form.Item label="Mail">
+            <Input />
+          </Form.Item>
+          <Form.Item label="New Password">
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
     </Container>
   );
 };

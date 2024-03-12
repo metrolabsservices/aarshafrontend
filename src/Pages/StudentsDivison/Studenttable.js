@@ -44,20 +44,23 @@ export const Studenttable = ({ searchFilter, isFilterReset }) => {
     current: 1,
     pageSize: 5,
   };
+
   const [channels, setChannels] = useState({
     mobileView: false,
     tabletView: false,
     laptopView: false,
     desktopView: false,
   });
+
   const [dataSource, setdataSource] = useState([]);
   const [filterFormData, setfilterFormData] = useState({});
   const [totalFormBlockReset, setTotalFormBlockReset] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSpin, setIsSpin] = useState(true);
   const [onCalling, setonCalling] = useState(false);
-
+  const [paginationReset, setPaginationReset] = useState(false);
   const [paginationProp, setPaginationProp] = useState(initialPage);
+
   const TableFormOutput = (e) => {
     if (e?.reset) {
       let removeResetObject = { ...filterFormData };
@@ -78,7 +81,7 @@ export const Studenttable = ({ searchFilter, isFilterReset }) => {
 
   const itemDelete = async (id) => {
     await axiosInstance
-      .delete(API.STUDENT_BY_ID + String(id))
+      .put(API.STUDENT_BY_ID + String(id), { isDeleted: true })
       .then((result) => {
         message.success("Record Deleted Successfully");
         setonCalling(!onCalling);
@@ -129,15 +132,15 @@ export const Studenttable = ({ searchFilter, isFilterReset }) => {
     },
     {
       title: "Status",
-      dataIndex: "status",
-      key: "status",
+      dataIndex: "studentStatus",
+      key: "studentStatus",
       width: 100,
       filterDropdown: ({ close }) => {
         return (
           <FilterBlock
             onClose={() => close()}
             type="multiSelector"
-            mainKey="status"
+            mainKey="studentStatus"
             options={optionMasterTypes.studentStatusTypes}
             tableOutput={TableFormOutput}
           />
@@ -145,41 +148,40 @@ export const Studenttable = ({ searchFilter, isFilterReset }) => {
       },
       filterIcon: () => (
         <FilterTwoTone
-          twoToneColor={filterFormData?.status ? "#00b96b" : "#b1b1b1"}
+          twoToneColor={filterFormData?.studentStatus ? "#00b96b" : "#b1b1b1"}
         />
       ),
       render: (_, record) => (
         <Tag
           bordered={false}
           color={
-            record.status == "AWAY"
+            record.studentStatus === "inactive"
               ? "error"
-              : record.status == "REGULAR"
+              : record.studentStatus === "active"
               ? "success"
               : "red"
           }
         >
-          {record.status}
+          {record.studentStatus}
         </Tag>
       ),
     },
     {
       title: "Guard Name",
-      dataIndex: "guardianName",
-      key: "guardianName",
+      dataIndex: "parentName",
+      key: "parentName",
       width: 100,
     },
     {
       title: "Phone",
-      dataIndex: "guardianPhoneNumber",
-      key: "guardianPhoneNumber",
+      dataIndex: "parentPhnNo",
+      key: "parentPhnNo",
       width: 100,
     },
-
     {
       title: "Class",
-      dataIndex: "gradeNumber",
-      key: "gradeNumber",
+      dataIndex: "classNo",
+      key: "classNo",
       width: 80,
       filterDropdown: ({ close }) => {
         return (
@@ -187,14 +189,14 @@ export const Studenttable = ({ searchFilter, isFilterReset }) => {
             onClose={() => close()}
             type="searchSelector"
             options={optionMasterTypes.gradeTypes}
-            mainKey="gradeNumber"
+            mainKey="classNo"
             tableOutput={TableFormOutput}
           />
         );
       },
       filterIcon: () => (
         <FilterTwoTone
-          twoToneColor={filterFormData?.gradeNumber ? "#00b96b" : "#b1b1b1"}
+          twoToneColor={filterFormData?.classNo ? "#00b96b" : "#b1b1b1"}
         />
       ),
     },
@@ -205,10 +207,10 @@ export const Studenttable = ({ searchFilter, isFilterReset }) => {
       fixed: "right",
       render: (_, record) => (
         <Space size="small" wrap>
-          <Link key={"edit"} to={`/ProjectOrders/edit/${record.id}`}>
+          <Link key={"edit"} to={`/Home_B/editstudent/${record.id}`}>
             <EditTwoTone />
           </Link>
-          <Link key={"view"} to={`/OrderView/${record.id}`}>
+          <Link key={"view"} to={`/Home_B/viewstudent/${record.id}`}>
             <EyeTwoTone />
           </Link>
           <Popconfirm
@@ -235,10 +237,14 @@ export const Studenttable = ({ searchFilter, isFilterReset }) => {
     const apiCall = async () => {
       await axiosInstance
         .get(API.STUDENT_BY_ALL, {
-          params: { Filters: onFilterUpdated, Pagination: paginationProp },
+          params: {
+            Filters: onFilterUpdated,
+            Pagination: paginationProp,
+          },
         })
         .then((result) => {
           // console.log(result.data);
+
           setdataSource(result.data);
           setIsLoading(false);
         })
@@ -253,8 +259,9 @@ export const Studenttable = ({ searchFilter, isFilterReset }) => {
           setIsSpin(false);
         });
     };
+
     let searchFinalValues =
-      searchFilter.inputValue == ""
+      searchFilter.inputValue === ""
         ? []
         : [
             {
@@ -273,6 +280,7 @@ export const Studenttable = ({ searchFilter, isFilterReset }) => {
               value: searchFilter.inputValue,
             },
           ];
+
     if (searchFilter.filterReset) {
       setfilterFormData({});
       isFilterReset(!searchFilter.filterReset);
@@ -281,14 +289,26 @@ export const Studenttable = ({ searchFilter, isFilterReset }) => {
     let onFilterUpdated = [
       ...searchFinalValues,
       ...Object.values(filterFormData),
+      { key: "isDeleted", value: false, operation: "delete" },
     ];
+    // if (onFilterUpdated.length > 0 && paginationReset === false) {
+    //   console.log("Pagination setup");
+    //   setPaginationProp(initialPage);
+    //   setPaginationReset(true);
+    // }
+
     console.log(onFilterUpdated, "filter search value");
 
     apiCall();
-  }, [paginationProp, onCalling, searchFilter, filterFormData]);
+  }, [
+    paginationProp,
+    onCalling,
+    searchFilter,
+    filterFormData,
+    paginationReset,
+  ]);
 
   const tableStyling = {
-    // background: "red",
     height: "calc(100vh - 210px)",
     display: "flex",
     flexDirection: "column",
@@ -323,7 +343,7 @@ export const Studenttable = ({ searchFilter, isFilterReset }) => {
               scroll={{ x: 50, y: 220 }}
               pagination={{
                 ...paginationProp,
-                total: dataSource.totalCount ? dataSource.totalCount : 100,
+                total: dataSource.totalCount,
                 pageSizeOptions: [5, 10, 25, 50, 100],
                 position: ["bottomRight"],
                 size: "small",
@@ -336,6 +356,3 @@ export const Studenttable = ({ searchFilter, isFilterReset }) => {
     </Container>
   );
 };
-// if (isFilterReset) {
-//   setfilterFormData({});
-// }

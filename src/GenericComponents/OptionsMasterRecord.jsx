@@ -5,6 +5,16 @@ export const optionMasterTypes = {
     { length: 10 },
     (_, index) => "Class-" + String(index + 1)
   ),
+  subjects: [
+    "Telugu",
+    "Hindi",
+    "English",
+    "Maths",
+    "Physics",
+    "Chemistry",
+    "Biology",
+    "Social",
+  ],
   filterTypes: [
     "contains",
     "search",
@@ -13,9 +23,3 @@ export const optionMasterTypes = {
     "containsCombined",
   ],
 };
-
-export const arrayOfStringConverter = (item) =>
-  item.map((i) => ({
-    value: i,
-    label: i,
-  }));

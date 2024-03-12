@@ -8,6 +8,7 @@ import { Button, Card, Flex, Input, Space, message } from "antd";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Studenttable } from "./Studenttable";
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   height: 100%;
@@ -26,6 +27,7 @@ const Container = styled.div`
 `;
 
 export const Studentindex = () => {
+  const nav = useNavigate();
   const [searchValue, setSearchValue] = useState({
     inputValue: "",
     filterReset: false,
@@ -101,13 +103,14 @@ export const Studentindex = () => {
           <Button
             className="navIcons"
             {...breakPointSetup}
-            // onClick={()=> }
+            onClick={() => nav("/Home_B/newstudent")}
             icon={<UserAddOutlined />}
           />
           <Button
             className="navIcons"
             {...breakPointSetup}
             icon={<CreditCardOutlined />}
+            onClick={() => nav("/Home_B/feereceipt")}
           />
         </Flex>
         <Studenttable

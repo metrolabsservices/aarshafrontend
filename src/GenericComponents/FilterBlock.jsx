@@ -11,7 +11,8 @@ import {
 } from "antd";
 import React, { useEffect } from "react";
 import styled from "styled-components";
-import { arrayOfStringConverter } from "./OptionsMasterRecord";
+import { arrayOfStringConverter } from "./Modifiers";
+
 const Container = styled.div`
   padding: 0px;
   margin: 0px;

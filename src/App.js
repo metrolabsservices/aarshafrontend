@@ -1,7 +1,12 @@
 import { Router } from "./Router";
+import { GuardProvider } from "./dbHub/GuardContext";
 
 function App() {
-  return <Router />;
+  return (
+    <GuardProvider>
+      <Router />
+    </GuardProvider>
+  );
 }
 
 export default App;
