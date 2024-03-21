@@ -39,6 +39,10 @@ export const toSingleObjectConverter = (x) =>
 
 export const formValidations = {
   Strings: { required: true, message: "${label} is required" },
+  Name: {
+    pattern: /^[A-Za-z]+$/,
+    message: "Only alphabetic characters allowed",
+  },
   Score: {
     pattern: /^(100|[1-9]?\d)$/,
     message: "Enter a valid score between 0 and 100",
@@ -77,6 +81,9 @@ export const toDateConverter = (x) => {
     return z.join(" ");
   }
 };
+
+export const toSortByDate = (x) =>
+  x.sort((a, b) => new Date(a.dateOfCharged) - new Date(b.dateOfCharged));
 
 export const arrayOfStringConverter = (item) =>
   typeof item === "undefined"

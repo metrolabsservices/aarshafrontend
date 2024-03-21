@@ -85,35 +85,35 @@ const items = [
     id: 1,
     label: "Home",
     icon: <HomeOutlined />,
-    route: "main/home",
+    route: "/main/home",
     disabled: false,
   },
   {
     id: 2,
     label: "Student.Mng",
     icon: <UsergroupDeleteOutlined />,
-    route: "studentpage",
+    route: "/main/home/studentpage",
     disabled: false,
   },
   {
     id: 3,
-    label: "Expenses.Mng",
+    label: "Transaction.Mng",
     icon: <DeploymentUnitOutlined />,
-    route: "Home_C",
+    route: "/main/home/transactionspage",
     disabled: false,
   },
   {
     id: 4,
     label: "Library.Mng",
     icon: <BookOutlined />,
-    route: "Home_D",
+    route: "/main/home/librarypage",
     disabled: false,
   },
   {
     id: 5,
     label: "Question Bank",
     icon: <FileDoneOutlined />,
-    route: "Home_E",
+    route: "/main/home/questionbankpage",
     disabled: false,
   },
 ];
@@ -147,8 +147,8 @@ export const AppLayout = () => {
     setIsDisplayFooter(window.innerWidth < 577);
     setCollapsed(window.innerWidth < 769);
   };
-  console.log(dbInfo);
-
+  const dbInfo1 = JSON.parse(localStorage.getItem("primeObj"));
+  // console.log(dbInfo1);
   useEffect(() => {
     window.addEventListener("resize", handleResize);
     setIsDisplayFooter(window.innerWidth < 577);
@@ -159,10 +159,9 @@ export const AppLayout = () => {
   }, []);
 
   const routerRoute = (x) => {
-    console.log(x);
+    // console.log(x);
     x = x.key;
-    x = "/" + items[parseInt(x.charAt(x.length - 1))].route;
-    console.log(x);
+    x = items[parseInt(x.charAt(x.length - 1))].route;
     return nav(x);
   };
   const loginProfileBox = (
