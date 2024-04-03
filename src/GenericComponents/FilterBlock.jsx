@@ -74,14 +74,14 @@ export const FilterBlock = ({
 
   const onReset = (e) => {
     tableOutput({ reset: mainKey });
+    form.resetFields();
     onClose();
   };
-  useEffect(() => {
-    console.log("reset in Filter Block");
-    if (isReset) {
-      form.resetFields();
-    }
-  }, [isReset]);
+
+  if (isReset) {
+    // console.log("----------- Block RESET -----------");
+    form.resetFields();
+  }
 
   return (
     <Container>
@@ -98,7 +98,7 @@ export const FilterBlock = ({
       </Row>
 
       <Form
-        // form={form}
+        form={form}
         className="formstyling"
         onFinish={onFinsih}
         size="small"

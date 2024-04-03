@@ -1,5 +1,6 @@
 import {
   Button,
+  Col,
   DatePicker,
   Flex,
   Form,
@@ -8,15 +9,15 @@ import {
   Modal,
   Row,
   Select,
+  Space,
+  Switch,
   TimePicker,
+  Typography,
   message,
 } from "antd";
-import React from "react";
-import dayjs from "dayjs";
-import customParseFormat from "dayjs/plugin/customParseFormat";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Backnavigationbtn } from "../../GenericComponents/Backnavigationbtn";
-import { optionMasterTypes } from "../../GenericComponents/OptionsMasterRecord";
 import {
   arrayOfStringConverter,
   disablePastDate,
@@ -32,6 +33,7 @@ import {
   PlusCircleTwoTone,
   PlusOutlined,
 } from "@ant-design/icons";
+import { useGuard } from "../../dbHub/GuardContext";
 
 const Container = styled.div`
   /* background-color: yellow; */
@@ -44,21 +46,45 @@ const Container = styled.div`
 
 export const Studentforms = () => {
   const [form] = Form.useForm();
+  const { dbInfo } = useGuard();
+  const [isWhatsAppTicked, setIsWhatsAppTicked] = useState(true);
+  const [windowsSize, setWindowSize] = useState({ width: 0, height: 0 });
+  const [selectorsList, setselectorsList] = useState({
+    boardTypes: [],
+    gradeTypes: [],
+    id: 0,
+    paymentTypes: [],
+    studentStatusTypes: [],
+    subjectTypes: [],
+    transactionTypes: [],
+    transactionsCategoryTypes: [],
+  });
   const nav = useNavigate();
   const onFinish = async (e) => {
-    // console.log("submit action -- ", e);
+    console.log("submit action -- ", e);
     let data = {
       ...e,
-      previousScore: parseInt(e.previousScore),
-      feeCharge: parseInt(e.feeCharge),
-      duration:
-        String(new Date(e.duration).getHours()) +
+      pastScore: parseInt(e.pastScore),
+      feeCharge: {
+        create: {
+          amount: parseInt(e.feeCharge),
+          dateOfCharged: new Date().toISOString(),
+        },
+      },
+      timing:
+        String(new Date(e.timing).getHours()) +
         ":" +
-        String(new Date(e.duration).getMinutes()),
+        String(new Date(e.timing).getMinutes()),
       joiningDate: new Date().toISOString(),
+      whatsappNo: e.whatsappStatus.status
+        ? e.parentPhnNo
+        : e.whatsappStatus.whatsappNo,
+      dueAmount: 0,
+      isDeleted: false,
     };
 
-    // console.log("modified data -", data);
+    delete data.whatsappStatus;
+    console.log("modified data -", { data });
     await axiosInstance
       .post(API.STUDENT_BY_ID + "create", data)
       .then((res) => {
@@ -88,118 +114,246 @@ export const Studentforms = () => {
         });
       })
       .catch((err) => {
-        // console.log(err.response.data.ErrorMessage);
+        console.log(err.response.data.ErrorMessage);
         message.error(err.response.data.ErrorMessage);
       });
   };
   const onFinishFailed = (err) => {
     console.log(err);
   };
+
+  useEffect(() => {
+    console.log(dbInfo);
+    setselectorsList(
+      dbInfo.isSelectorReady
+        ? dbInfo.selectors
+        : {
+            boardTypes: [],
+            gradeTypes: [],
+            id: 0,
+            paymentTypes: [],
+            studentStatusTypes: [],
+            subjectTypes: [],
+            transactionTypes: [],
+            transactionsCategoryTypes: [],
+          }
+    );
+    const handleResize = () => {
+      // console.log(window.innerWidth, window.innerHeight);
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+  const mySpans = {
+    xs: 24,
+    sm: 24,
+    md: 10,
+    lg: 11,
+    xl: 11,
+    xxl: 5,
+  };
+
+  const fromAlign = {
+    span: windowsSize.width < 577 ? 24 : 12,
+  };
+
+  const studentFormStyle = {
+    padding: "10px",
+    // maxHeight: "380px",
+    height:
+      windowsSize.width < 577 ? "calc(100vh - 170px)" : "calc(100vh - 140px)",
+    overflowY: "auto",
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+  };
+
   return (
     <Container>
       <Backnavigationbtn title={"New Student Form"} />
       <Form
-        className="studentFormStyle"
+        style={studentFormStyle}
         name="newStudent"
         form={form}
         labelWrap
-        size="small"
+        size={
+          windowsSize.width < 577
+            ? "small"
+            : windowsSize.width > 576 && windowsSize.width < 1440
+            ? "middle"
+            : "large"
+        }
         variant="filled"
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         requiredMark={false}
       >
-        <Form.Item label="Name" name="name" rules={[formValidations.Strings]}>
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Class No"
-          name="gradeNumber"
-          rules={[formValidations.Strings]}
-        >
-          <Select
-            options={arrayOfStringConverter(optionMasterTypes.gradeTypes)}
-          />
-        </Form.Item>
-        <Form.Item
-          label="School Name"
-          name="schoolName"
-          rules={[formValidations.Strings]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Board"
-          name="boardType"
-          rules={[formValidations.Strings]}
-        >
-          <Select
-            options={arrayOfStringConverter(optionMasterTypes.boardTypes)}
-          />
-        </Form.Item>
-        <Form.Item
-          label="Status"
-          name="status"
-          rules={[formValidations.Strings]}
-        >
-          <Select
-            options={arrayOfStringConverter(
-              optionMasterTypes.studentStatusTypes
-            )}
-          />
-        </Form.Item>
-        <Form.Item
-          label="Past Grade"
-          name="previousScore"
-          rules={[formValidations.Strings, formValidations.Score]}
-        >
-          <Input suffix="%" />
-        </Form.Item>
-        <Form.Item
-          label="Subjects"
-          name="subjectsAcquired"
-          rules={[formValidations.Strings]}
-        >
-          <Select
-            mode="multiple"
-            allowClear
-            options={arrayOfStringConverter(optionMasterTypes.subjects)}
-          />
-        </Form.Item>
+        <Row gutter={[30, 5]} align="center">
+          <Col {...fromAlign}>
+            <Form.Item
+              label="Name"
+              name="name"
+              rules={[formValidations.Strings]}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col {...fromAlign}>
+            <Form.Item
+              label="Class No"
+              name="classNo"
+              rules={[formValidations.Strings]}
+            >
+              <Select
+                options={arrayOfStringConverter(selectorsList.gradeTypes)}
+              />
+            </Form.Item>
+          </Col>
+          <Col {...fromAlign}>
+            <Form.Item
+              label="School Name"
+              name="schoolName"
+              rules={[formValidations.Strings]}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col {...fromAlign}>
+            <Form.Item
+              label="Board Type"
+              name="boardType"
+              rules={[formValidations.Strings]}
+            >
+              <Select
+                options={arrayOfStringConverter(selectorsList.boardTypes)}
+              />
+            </Form.Item>
+          </Col>
+          <Col {...fromAlign}>
+            <Form.Item
+              label="Status"
+              name="studentStatus"
+              rules={[formValidations.Strings]}
+            >
+              <Select
+                options={arrayOfStringConverter(
+                  selectorsList.studentStatusTypes
+                )}
+              />
+            </Form.Item>
+          </Col>
+          <Col {...fromAlign}>
+            <Form.Item
+              label="Past Grade"
+              name="pastScore"
+              rules={[formValidations.Strings, formValidations.Score]}
+            >
+              <Input suffix="%" />
+            </Form.Item>
+          </Col>
+          <Col {...fromAlign}>
+            <Form.Item
+              label="Subjects"
+              name="subjectsTaken"
+              rules={[formValidations.Strings]}
+            >
+              <Select
+                mode="multiple"
+                allowClear
+                options={arrayOfStringConverter(selectorsList.subjectTypes)}
+              />
+            </Form.Item>
+          </Col>
+          <Col {...fromAlign}>
+            <Form.Item
+              label="Timings"
+              name="timing"
+              rules={[formValidations.Strings]}
+            >
+              <TimePicker
+                style={{ width: "100%" }}
+                format="HH:mm"
+                // defaultValue={dayjs("02:00", "HH:mm")}
+                showNow={false}
+              />
+            </Form.Item>
+          </Col>
+          <Col {...fromAlign}>
+            <Form.Item
+              label="Parent Name"
+              name="parentName"
+              rules={[formValidations.Strings]}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col {...fromAlign}>
+            {" "}
+            <Form.Item
+              label="Parent Phn.No"
+              name="parentPhnNo"
+              rules={[formValidations.Strings, formValidations.PhoneNumbers]}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col {...fromAlign}>
+            <Form.Item
+              label="WhatsApp No Same as Phone No"
+              rules={[formValidations.Strings, formValidations.PhoneNumbers]}
+              // name={"whatsappStatus"}
+            >
+              <Flex justify="space-evenly" style={{ height: "30px" }}>
+                <Form.Item name={["whatsappStatus", "status"]}>
+                  <Switch
+                    defaultChecked
+                    checked={isWhatsAppTicked}
+                    checkedChildren="YES"
+                    unCheckedChildren="NO"
+                    onChange={(e) => {
+                      // console.log(e);
+                      setIsWhatsAppTicked(e);
+                    }}
+                  />
+                </Form.Item>
 
-        <Form.Item
-          label="Timings"
-          name="duration"
-          rules={[formValidations.Strings]}
-        >
-          <TimePicker
-            style={{ width: "100%" }}
-            format="HH:mm"
-            // defaultValue={dayjs("02:00", "HH:mm")}
-            showNow={false}
-          />
-        </Form.Item>
-        <Form.Item
-          label="Guardian Name"
-          name="guardianName"
-          rules={[formValidations.Strings]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Guardian Phn No"
-          name="guardianPhoneNumber"
-          rules={[formValidations.Strings, formValidations.PhoneNumbers]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Fee Amount"
-          name="feeCharge"
-          rules={[formValidations.Strings, formValidations.Numbers]}
-        >
-          <Input suffix="₹ /- " />
-        </Form.Item>
+                <Form.Item
+                  hidden={isWhatsAppTicked}
+                  name={["whatsappStatus", "whatsappNo"]}
+                  rules={
+                    isWhatsAppTicked
+                      ? [{ required: false }]
+                      : [
+                          formValidations.PhoneNumbers,
+                          {
+                            required: true,
+                            message: "WhatsApp No is required",
+                          },
+                        ]
+                  }
+                >
+                  <Input />
+                </Form.Item>
+              </Flex>
+            </Form.Item>
+          </Col>
+          <Col {...fromAlign}>
+            <Form.Item
+              label="Tution Fee Per Month"
+              name="feeCharge"
+              rules={[formValidations.Strings, formValidations.Numbers]}
+            >
+              <Input suffix="₹ /- " />
+            </Form.Item>
+          </Col>
+        </Row>
 
         <Form.Item>
           <Row justify="space-around">

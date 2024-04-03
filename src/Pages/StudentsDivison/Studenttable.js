@@ -29,66 +29,167 @@ import {
 } from "@ant-design/icons";
 import { FilterBlock } from "../../GenericComponents/FilterBlock";
 import { optionMasterTypes } from "../../GenericComponents/OptionsMasterRecord";
+import { useGuard } from "../../dbHub/GuardContext";
 
 const Container = styled.div`
-  width: auto;
-
-  margin-top: 15px;
-  & .errorBox {
-    padding: 0%;
+  /* height: calc(100vh - ); */
+  align-items: center;
+  align-content: center;
+  border: 1px solid red;
+  & .paginationProp {
+    /* margin-top: 20; */
+    /* background-color: #a020f0; */
+    text-align: right;
   }
 `;
 
-export const Studenttable = ({ searchFilter, isFilterReset }) => {
-  var initialPage = {
+export const Studenttable = ({ props, outFunc }) => {
+  const { dbInfo } = useGuard();
+  const initialPagination = {
+    pageSize: 4,
     current: 1,
-    pageSize: 5,
   };
-
-  const [channels, setChannels] = useState({
-    mobileView: false,
-    tabletView: false,
-    laptopView: false,
-    desktopView: false,
+  const styless = { style: { height: "100%" } };
+  const [windowsSize, setWindowSize] = useState({ width: 0, height: 0 });
+  const [filterData, setFilterData] = useState({});
+  const [tableData, setTableData] = useState([]);
+  const [filterBlockReset, setfilterBlockReset] = useState(false);
+  const [apiIntercept, setApiIntercept] = useState(false);
+  const [paginationProps, setpaginationProps] = useState(initialPagination);
+  const [paginationCalling, setPaginationCalling] = useState(true);
+  const [errorHandler, seterrorHandler] = useState({
+    isError: false,
+    errorMessage: "",
   });
-
-  const [dataSource, setdataSource] = useState([]);
-  const [filterFormData, setfilterFormData] = useState({});
-  const [totalFormBlockReset, setTotalFormBlockReset] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSpin, setIsSpin] = useState(true);
-  const [onCalling, setonCalling] = useState(false);
-  const [paginationReset, setPaginationReset] = useState(false);
-  const [paginationProp, setPaginationProp] = useState(initialPage);
-
-  const TableFormOutput = (e) => {
-    if (e?.reset) {
-      let removeResetObject = { ...filterFormData };
-      delete removeResetObject[e.reset];
-      // console.log(removeResetObject);
-      setfilterFormData(removeResetObject);
-    } else {
-      setfilterFormData({ ...filterFormData, ...e });
-    }
-  };
-
-  const onChangeHandle = (pagination, filters, sorter) => {
-    console.log(sorter, pagination);
-    if (pagination) {
-      setPaginationProp({ ...paginationProp, ...pagination });
-    }
-  };
+  const [isLoaded, setisLoaded] = useState(true);
 
   const itemDelete = async (id) => {
     await axiosInstance
       .put(API.STUDENT_BY_ID + String(id), { isDeleted: true })
       .then((result) => {
         message.success("Record Deleted Successfully");
-        setonCalling(!onCalling);
+        setApiIntercept(!apiIntercept);
       })
       .catch((err) => {
         message.error("Failed to Delete ");
       });
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      // console.log(
+      //   "Windows Height and Width --->  ",
+      //   window.innerWidth,
+      //   window.innerHeight
+      // );
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    const apiCall = async (flt, pgn) => {
+      // console.log(flt, pgn);
+      await axiosInstance
+        .get(API.STUDENT_BY_ALL, {
+          params: {
+            Filters: flt,
+            Pagination: pgn,
+          },
+        })
+        .then((result) => {
+          console.log("api called data --> ", result);
+          !dbInfo.isSelectorReady
+            ? seterrorHandler({
+                isError: true,
+                errorMessage: "Unable to get Selectors - Backend Failed",
+              })
+            : seterrorHandler({
+                isError: false,
+                errorMessage: "",
+              });
+          setTableData(result.data);
+          setisLoaded(false);
+        })
+        .catch((err) => {
+          // console.log("api error resp --> ", err);
+          seterrorHandler({
+            isError: true,
+            errorMessage: "Unable to get Table Data - Backend Failed",
+          });
+          setisLoaded(false);
+        });
+    };
+
+    let searchSet = [];
+    if (!props.isSearchReset) {
+      searchSet = [
+        {
+          operation: "containsCombined",
+          key: "name",
+          value: props.searchValue,
+        },
+        {
+          operation: "containsCombined",
+          key: "parentName",
+          value: props.searchValue,
+        },
+        {
+          operation: "containsCombined",
+          key: "parentPhnNo",
+          value: props.searchValue,
+        },
+      ];
+    }
+
+    let filterSet = [{ key: "isDeleted", value: false, operation: "delete" }];
+
+    if (props.isTotalReset) {
+      console.log("---------- Reset is in Table ---------");
+      setFilterData({});
+      setfilterBlockReset(true);
+      setpaginationProps(initialPagination);
+      outFunc({ ...props, isTotalReset: false });
+    } else {
+      filterSet = [
+        ...searchSet,
+        ...Object.values(filterData),
+        { key: "isDeleted", value: false, operation: "delete" },
+      ];
+    }
+
+    if (!props.isSearchReset && paginationCalling) {
+      setpaginationProps(initialPagination);
+      setPaginationCalling(!paginationCalling);
+    }
+    // console.log("nav Props -- > ", props);
+    // console.log("selectors Filters -- > ", filterData);
+    // console.log("final Filter Result -- > ", filterSet);
+
+    window.addEventListener("resize", handleResize);
+    const timeOut = setTimeout(() => {
+      apiCall(filterSet, paginationProps);
+    }, 100);
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      clearTimeout(timeOut);
+    };
+  }, [props, dbInfo, apiIntercept, paginationCalling]);
+
+  const TableFormOutput = (e) => {
+    // console.log("filter Data -- > ", e);
+    if (e?.reset) {
+      let removeResetObject = { ...filterData };
+      delete removeResetObject[e.reset];
+      console.log(removeResetObject);
+      setFilterData(removeResetObject);
+    } else {
+      const x = { ...filterData, ...e };
+      setFilterData(x);
+    }
+    setApiIntercept(!apiIntercept);
   };
 
   const columns = [
@@ -117,16 +218,16 @@ export const Studenttable = ({ searchFilter, isFilterReset }) => {
           <FilterBlock
             onClose={() => close()}
             type="multiSelector"
-            options={optionMasterTypes.boardTypes}
+            options={dbInfo.selectors.boardTypes}
             mainKey="boardType"
             tableOutput={TableFormOutput}
-            isReset={totalFormBlockReset}
+            isReset={filterBlockReset}
           />
         );
       },
       filterIcon: () => (
         <FilterTwoTone
-          twoToneColor={filterFormData?.boardType ? "#00b96b" : "#b1b1b1"}
+          twoToneColor={filterData.boardType ? "#00b96b" : "#b1b1b1"}
         />
       ),
     },
@@ -135,22 +236,22 @@ export const Studenttable = ({ searchFilter, isFilterReset }) => {
       dataIndex: "studentStatus",
       key: "studentStatus",
       width: 100,
-      filterDropdown: ({ close }) => {
-        return (
-          <FilterBlock
-            onClose={() => close()}
-            type="multiSelector"
-            mainKey="studentStatus"
-            options={optionMasterTypes.studentStatusTypes}
-            tableOutput={TableFormOutput}
-          />
-        );
-      },
-      filterIcon: () => (
-        <FilterTwoTone
-          twoToneColor={filterFormData?.studentStatus ? "#00b96b" : "#b1b1b1"}
-        />
-      ),
+      // filterDropdown: ({ close }) => {
+      //   return (
+      //     <FilterBlock
+      //       onClose={() => close()}
+      //       type="multiSelector"
+      //       mainKey="studentStatus"
+      //       options={optionMasterTypes.studentStatusTypes}
+      //       tableOutput={TableFormOutput}
+      //     />
+      //   );
+      // },
+      // filterIcon: () => (
+      //   <FilterTwoTone
+      //     twoToneColor={filterData?.studentStatus ? "#00b96b" : "#b1b1b1"}
+      //   />
+      // ),
       render: (_, record) => (
         <Tag
           bordered={false}
@@ -183,22 +284,22 @@ export const Studenttable = ({ searchFilter, isFilterReset }) => {
       dataIndex: "classNo",
       key: "classNo",
       width: 80,
-      filterDropdown: ({ close }) => {
-        return (
-          <FilterBlock
-            onClose={() => close()}
-            type="searchSelector"
-            options={optionMasterTypes.gradeTypes}
-            mainKey="classNo"
-            tableOutput={TableFormOutput}
-          />
-        );
-      },
-      filterIcon: () => (
-        <FilterTwoTone
-          twoToneColor={filterFormData?.classNo ? "#00b96b" : "#b1b1b1"}
-        />
-      ),
+      // filterDropdown: ({ close }) => {
+      //   return (
+      //     <FilterBlock
+      //       onClose={() => close()}
+      //       type="searchSelector"
+      //       options={optionMasterTypes.gradeTypes}
+      //       mainKey="classNo"
+      //       tableOutput={TableFormOutput}
+      //     />
+      //   );
+      // },
+      // filterIcon: () => (
+      //   <FilterTwoTone
+      //     twoToneColor={filterData?.classNo ? "#00b96b" : "#b1b1b1"}
+      //   />
+      // ),
     },
     {
       title: "Action",
@@ -224,134 +325,58 @@ export const Studenttable = ({ searchFilter, isFilterReset }) => {
     },
   ];
 
-  useEffect(() => {
-    window.addEventListener("resize", () => {
-      const w = window.innerWidth;
-      setChannels({
-        mobileView: w <= 576,
-        tabletView: 577 <= w && w <= 992,
-        laptopView: 993 <= w && w <= 1200,
-        desktopView: w > 1201,
-      });
-    });
-    const apiCall = async () => {
-      await axiosInstance
-        .get(API.STUDENT_BY_ALL, {
-          params: {
-            Filters: onFilterUpdated,
-            Pagination: paginationProp,
-          },
-        })
-        .then((result) => {
-          // console.log(result.data);
-
-          setdataSource(result.data);
-          setIsLoading(false);
-        })
-        .catch((err) => {
-          console.log(
-            "error message in server side table ",
-            err.response.data.ErrorMessage
-          );
-          setIsLoading(true);
-        })
-        .finally(() => {
-          setIsSpin(false);
-        });
-    };
-
-    let searchFinalValues =
-      searchFilter.inputValue === ""
-        ? []
-        : [
-            {
-              operation: "containsCombined",
-              key: "name",
-              value: searchFilter.inputValue,
-            },
-            {
-              operation: "containsCombined",
-              key: "guardianName",
-              value: searchFilter.inputValue,
-            },
-            {
-              operation: "containsCombined",
-              key: "guardianPhoneNumber",
-              value: searchFilter.inputValue,
-            },
-          ];
-
-    if (searchFilter.filterReset) {
-      setfilterFormData({});
-      isFilterReset(!searchFilter.filterReset);
-    }
-
-    let onFilterUpdated = [
-      ...searchFinalValues,
-      ...Object.values(filterFormData),
-      { key: "isDeleted", value: false, operation: "delete" },
-    ];
-    // if (onFilterUpdated.length > 0 && paginationReset === false) {
-    //   console.log("Pagination setup");
-    //   setPaginationProp(initialPage);
-    //   setPaginationReset(true);
-    // }
-
-    console.log(onFilterUpdated, "filter search value");
-
-    apiCall();
-  }, [
-    paginationProp,
-    onCalling,
-    searchFilter,
-    filterFormData,
-    paginationReset,
-  ]);
-
-  const tableStyling = {
-    height: "calc(100vh - 210px)",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: channels.mobileView ? "center" : "start",
-  };
-
   return (
-    <Container>
-      {isLoading ? (
-        <Flex align="center" justify="center" vertical={true}>
+    <Container
+      style={{
+        height:
+          windowsSize.width < 577
+            ? "calc(100vh - 250px)"
+            : "calc(100vh - 195px)",
+      }}
+    >
+      {errorHandler.isError ? (
+        <Flex justify="center" align="center" style={{ height: "100%" }}>
           <Result
             className="errorBox"
-            status="500"
-            subTitle="Sorry, something went wrong."
+            status="warning"
+            title="Sorry, something went wrong"
+            subTitle={errorHandler.errorMessage}
           />
         </Flex>
       ) : (
-        <div style={tableStyling}>
-          <Spin spinning={isSpin}>
-            <Table
-              columns={columns}
-              dataSource={dataSource.items}
-              rowKey="id"
-              bordered
-              size={
-                channels.mobileView || channels.tabletView
-                  ? "small"
-                  : channels.desktopView
-                  ? "large"
-                  : "middle"
-              }
-              scroll={{ x: 50, y: 220 }}
-              pagination={{
-                ...paginationProp,
-                total: dataSource.totalCount,
-                pageSizeOptions: [5, 10, 25, 50, 100],
-                position: ["bottomRight"],
-                size: "small",
-              }}
-              onChange={onChangeHandle}
-            />
-          </Spin>
-        </div>
+        <Spin spinning={isLoaded} style={{ height: "100%" }}>
+          <Table
+            columns={columns}
+            dataSource={tableData.items}
+            rowKey="id"
+            bordered
+            size="small"
+            // size={
+            //   channels.mobileView || channels.tabletView
+            //     ? "small"
+            //     : channels.desktopView
+            //     ? "large"
+            //     : "middle"
+            // }
+            scroll={{ x: 50, y: 220 }}
+            pagination={false}
+          />
+          <Pagination
+            className="paginationProp"
+            style={{ marginTop: "15px" }}
+            size="small"
+            defaultCurrent={1}
+            defaultPageSize={4}
+            pageSizeOptions={[5, 10, 20, 50, 100]}
+            {...paginationProps} // current={} pageSize={}
+            total={tableData.totalCount}
+            showTotal={() => `Total ${tableData.totalCount}`}
+            onChange={(page, pageSize) => {
+              setpaginationProps({ current: page, pageSize: pageSize });
+              setApiIntercept(!apiIntercept);
+            }}
+          />
+        </Spin>
       )}
     </Container>
   );

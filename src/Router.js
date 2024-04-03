@@ -38,36 +38,41 @@ export const Router = () => {
           <Route path="/main/home/studentinfo" element={<StudentInfo />} />
 
           {/* ++++++++++ Student Page ++++++++++++ */}
-          <Route path="/main/home/studentpage" element={<Studentindex />} />
+          <Route path="/main/studentpage" element={<Studentindex />} />
+
+          {/* ---------  Student Page / new form Page ------- */}
           <Route
             path="/main/studentpage/newstudent"
             element={<Studentforms />}
           />
+
+          {/* ---------  Student Page / edit form Page ------- */}
           <Route
             path="/main/studentpage/editstudent/:usertoken"
             element={<Studenteditforms />}
           />
+
+          {/* ---------  Student Page / view Page ------- */}
           <Route
             path="/main/studentpage/viewstudent/:usertoken"
             element={<Studentviewforms />}
           />
+
+          {/* ---------  Student Page / feereceipt Page ------- */}
           <Route
             path="/main/studentpage/feereceipt"
             element={<Studentfeeform />}
           />
 
           {/* ---------  Home page / Transaction Page ------- */}
-          <Route
-            path="/main/home/transactionspage"
-            element={<Expensesindex />}
-          />
+          <Route path="/main/transactionspage" element={<Expensesindex />} />
 
           {/* ---------  Home page / Library Page ------- */}
-          <Route path="/main/home/librarypage" element={<Libraryindex />} />
+          <Route path="/main/librarypage" element={<Libraryindex />} />
 
           {/* ---------  Home page / Question Bank Page ------- */}
           <Route
-            path="/main/home/questionbankpage"
+            path="/main/questionbankpage"
             element={<Questionbankindex />}
           />
         </Route>

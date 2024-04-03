@@ -16,6 +16,7 @@ import {
   Spin,
   Switch,
   Table,
+  Tag,
   Typography,
   message,
 } from "antd";
@@ -23,12 +24,53 @@ import { DeleteTwoTone, EditTwoTone } from "@ant-design/icons";
 import { Titlecustom } from "../../GenericComponents/Titlecustom";
 import { formValidations } from "../../GenericComponents/Modifiers";
 const Container = styled.div`
-  border: 1px solid red;
+  /* border: 1px solid red; */
   height: calc(100% - 5px);
   & .contentBlock {
     margin-top: 30px;
   }
 `;
+
+const customTag = (prop) => {
+  switch (prop) {
+    case "superadmin":
+      return (
+        <Tag bordered={false} color="purple">
+          Super Admin
+        </Tag>
+      );
+    case "admin":
+      return (
+        <Tag bordered={false} color="processing">
+          Admin
+        </Tag>
+      );
+    case "receiptionist":
+      return (
+        <Tag bordered={false} color="warning">
+          Receiption
+        </Tag>
+      );
+    case "developer":
+      return (
+        <Tag bordered={false} color="error">
+          Devloper
+        </Tag>
+      );
+    case "generaluser":
+      return (
+        <Tag bordered={false} color="success">
+          Gen. User
+        </Tag>
+      );
+    default:
+      return (
+        <Tag bordered={false} color="red">
+          NA
+        </Tag>
+      );
+  }
+};
 
 export const LoginProfiles = () => {
   const [tableData, setTableData] = useState([]);
@@ -126,6 +168,11 @@ export const LoginProfiles = () => {
       dataIndex: "userName",
       key: "userName",
       width: 100,
+      render: (_, data) => (
+        <Typography>
+          {data.userName} -{customTag(data.role)}
+        </Typography>
+      ),
     },
     {
       title: "Mail",

@@ -92,28 +92,28 @@ const items = [
     id: 2,
     label: "Student.Mng",
     icon: <UsergroupDeleteOutlined />,
-    route: "/main/home/studentpage",
+    route: "/main/studentpage",
     disabled: false,
   },
   {
     id: 3,
     label: "Transaction.Mng",
     icon: <DeploymentUnitOutlined />,
-    route: "/main/home/transactionspage",
+    route: "/main/transactionspage",
     disabled: false,
   },
   {
     id: 4,
     label: "Library.Mng",
     icon: <BookOutlined />,
-    route: "/main/home/librarypage",
+    route: "/main/librarypage",
     disabled: false,
   },
   {
     id: 5,
     label: "Question Bank",
     icon: <FileDoneOutlined />,
-    route: "/main/home/questionbankpage",
+    route: "/main/questionbankpage",
     disabled: false,
   },
 ];
@@ -151,8 +151,8 @@ export const AppLayout = () => {
   // console.log(dbInfo1);
   useEffect(() => {
     window.addEventListener("resize", handleResize);
-    setIsDisplayFooter(window.innerWidth < 577);
-
+    // setIsDisplayFooter(window.innerWidth < 577);
+    handleResize();
     return () => {
       window.removeEventListener("resize", handleResize);
     };
