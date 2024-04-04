@@ -38,7 +38,8 @@ const Container = styled.div`
     font-weight: lighter;
   }
   & .selectorBox {
-    margin: 5px;
+    margin-top: 25px;
+    width: 100%;
     position: sticky;
   }
   & .secondaryContainer {
@@ -49,177 +50,57 @@ const Container = styled.div`
 
 export const SearchInput = (props) => {
   const [searchValue, setSearchValue] = useState("");
-  const [channels, setChannels] = useState({
-    mobileView: true,
-    tabletView: false,
-    laptopView: false,
-    desktopView: false,
-  });
-  const [widthAdj, setwidthAdj] = useState(570);
-  const [data, setData] = useState([]);
-  const [errorRaised, seterrorRaised] = useState(false);
-  const [openStatus, setopenStatus] = useState(true);
-  const [descriptionDisplayStatus, setDescriptionDisplayStatus] = useState({
-    status: true,
-    desData: [],
-  });
-
+  const [windowsSize, setWindowSize] = useState({ width: 0, height: 0 });
+  const [data, setData] = useState();
+  const [errorRaised, setErrorRaised] = useState(false);
   useEffect(() => {
-    const updateWindowDimensions = () => {
-      const w = window.innerWidth;
-      setChannels({
-        mobileView: w <= 576,
-        tabletView: 577 <= w && w <= 992,
-        laptopView: 993 <= w && w <= 1200,
-        desktopView: w > 1201,
+    const handleResize = () => {
+      // console.log(window.innerWidth, window.innerHeight);
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
       });
-      setwidthAdj(w);
     };
-    updateWindowDimensions();
-    window.addEventListener("resize", updateWindowDimensions);
-    const apiCall = async () => {
+    window.addEventListener("resize", handleResize);
+    const apiCall = async (searchValue) => {
       await axiosInstance
         .post(API.STUDENT_BY_NAME, { searchIput: searchValue })
         .then((result) => {
           setData(result.data);
-          seterrorRaised(false);
+          setErrorRaised(false);
         })
         .catch((err) => {
           console.log(err);
-          seterrorRaised(true);
+          setErrorRaised(true);
         });
     };
-    apiCall();
-    setopenStatus(!(searchValue.length > 0));
-    return () => {
-      window.removeEventListener("resize", updateWindowDimensions);
-    };
-  }, [searchValue]);
-  const itemDisplay = (prp) => {
-    let x = Object.entries(prp)
-      .filter((j) => j[0] != "feeDetails")
-      .map((i) => ({ label: toCaptalizeString(i[0]), children: String(i[1]) }));
-    console.log(prp, x);
 
-    setSearchValue("");
-    setopenStatus(true);
-    setDescriptionDisplayStatus({ desData: x, status: false });
-  };
+    apiCall();
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   return (
     <Container>
-      <Flex justify="space-evenly" align="center" className="selectorBox">
-        <Backnavigationbtn />
-        <Space.Compact>
-          <Input
-            suffix={<SearchOutlined />}
-            onChange={(e) => setSearchValue(e.target.value)}
-            value={searchValue}
-          />
-          <Button
-            type="primary"
-            onClick={() => {
-              setData([]);
-              setSearchValue("");
-              setDescriptionDisplayStatus({
-                status: true,
-                desData: [],
-              });
-            }}
-          >
-            Reset
-          </Button>
-        </Space.Compact>
-      </Flex>
-      <div className="secondaryContainer">
-        <div
-          hidden={openStatus}
-          style={{
-            marginTop: 20,
-            border: "2px solid grey",
-            padding: "0px 5px",
+      <Space.Compact className="selectorBox">
+        <Input
+          suffix={<SearchOutlined />}
+          onChange={(e) => setSearchValue(e.target.value)}
+          value={searchValue}
+        />
+        <Button
+          type="primary"
+          onClick={() => {
+            setData([]);
+            setSearchValue("");
           }}
         >
-          {errorRaised ? (
-            <Empty
-              image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-              description={
-                <span>
-                  Data <a href="#API">Not Found</a>
-                </span>
-              }
-            />
-          ) : (
-            <List
-              dataSource={data}
-              style={{
-                overflowX: "scroll",
-                maxHeight: "150px",
-              }}
-              renderItem={(e) => (
-                <List.Item>
-                  <List.Item.Meta
-                    title={`${e.name}`}
-                    description={`S/O ${e.guardianName}, Phn No-${e.guardianPhoneNumber}`}
-                  />
-                  <Button
-                    icon={<PlusCircleTwoTone twoToneColor="#ff2222" />}
-                    type="text"
-                    onClick={() => itemDisplay(e)}
-                  />
-                </List.Item>
-              )}
-            />
-          )}
-        </div>
-        <div hidden={descriptionDisplayStatus.status} style={{ marginTop: 20 }}>
-          <Descriptions
-            title="Student Details Checked"
-            bordered
-            size="small"
-            column={{
-              xs: 1,
-              sm: 2,
-              md: 3,
-              lg: 3,
-              xl: 4,
-              xxl: 4,
-            }}
-            items={descriptionDisplayStatus.desData}
-          />
-        </div>
-        <Layout style={{ marginTop: 30 }}>
-          <Layout.Content>
-            <Card
-              title={
-                <Card.Meta
-                  title="AARSHA TUTIONS"
-                  description="learning is timeless"
-                />
-              }
-              extra={<Avatar src="/logo512.png" alt="LOGO" />}
-            >
-              <Descriptions
-                title="Student Details Checked"
-                size="small"
-                column={{
-                  xs: 1,
-                  sm: 2,
-                  md: 3,
-                  lg: 3,
-                  xl: 4,
-                  xxl: 4,
-                }}
-                items={descriptionDisplayStatus.desData}
-              />
-            </Card>
-          </Layout.Content>
-          <Layout.Footer>
-            <Button type="primary" style={{ width: "100%" }}>
-              Submit
-            </Button>
-          </Layout.Footer>
-        </Layout>
-      </div>
+          Reset
+        </Button>
+      </Space.Compact>
     </Container>
   );
 };

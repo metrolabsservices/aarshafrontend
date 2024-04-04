@@ -164,16 +164,21 @@ export const Studentforms = () => {
     span: windowsSize.width < 577 ? 24 : 12,
   };
 
-  const studentFormStyle = {
-    padding: "10px",
-    // maxHeight: "380px",
-    height:
-      windowsSize.width < 577 ? "calc(100vh - 170px)" : "calc(100vh - 140px)",
-    overflowY: "auto",
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "column",
-  };
+  const studentFormStyle =
+    windowsSize.width < 577
+      ? {
+          padding: "10px",
+          height: "calc(100vh - 170px)",
+          overflow: "auto",
+        }
+      : {
+          padding: "10px",
+          height: "calc(100vh - 140px)",
+          overflow: "auto",
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "column",
+        };
 
   return (
     <Container>
@@ -195,7 +200,7 @@ export const Studentforms = () => {
         onFinishFailed={onFinishFailed}
         requiredMark={false}
       >
-        <Row gutter={[30, 5]} align="center">
+        <Row gutter={windowsSize.width < 577 ? 0 : [30, 5]} align="center">
           <Col {...fromAlign}>
             <Form.Item
               label="Name"
