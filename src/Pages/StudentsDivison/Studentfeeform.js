@@ -9,7 +9,7 @@ export const Studentfeeform = () => {
   return (
     <Container>
       <Backnavigationbtn title="Fee Reciept Generator" />
-      <SearchInput placeholder="Search by Name" />
+      <SearchInput />
     </Container>
   );
 };
