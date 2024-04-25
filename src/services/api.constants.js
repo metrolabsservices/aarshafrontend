@@ -4,6 +4,7 @@ export const API = {
   STUDENY_BY_FEE: "student/feedetails",
   STUDENT_BY_NAME: "student/getbyname",
   STUDENT_BY_ID: "student/",
+  STUDENT_FEE_BY_ID: "student/newfee",
   SELECTORS_GET: "selector/getlist",
   SELECTORS_UPDATE: "selector/update/",
   LOGIN: "loginregister/login",

@@ -8,6 +8,7 @@ export function GuardProvider({ children }) {
   const [dbInfo, setDbInfo] = useState({
     isLoggedin: false,
     isSelectorReady: false,
+    isPrintReady: false,
     selectors: {
       id: 0,
       boardTypes: [],
@@ -18,6 +19,7 @@ export function GuardProvider({ children }) {
       transactionTypes: [],
       transactionsCategoryTypes: [],
     },
+    printer: {},
   });
   const updateDB = (obj) => {
     let primeObj = { ...dbInfo, ...obj };

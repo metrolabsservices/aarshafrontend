@@ -66,6 +66,22 @@ export const formValidations = {
     message:
       " Passwords should contain Numbers, Special Symbols, Uppercase and Lowercase letters ",
   },
+  LessThanTarget: (targetValue) => ({
+    validator(_, value) {
+      if (Number(value) <= Number(targetValue)) {
+        return Promise.resolve();
+      }
+      return Promise.reject(`Value must be less than ${targetValue}`);
+    },
+  }),
+  NonNegative: {
+    validator(_, value) {
+      if (Number(value) >= 1) {
+        return Promise.resolve();
+      }
+      return Promise.reject("Value must be a positive number");
+    },
+  },
 };
 
 export const toDateConverter = (x) => {
@@ -95,7 +111,6 @@ export const arrayOfStringConverter = (item) =>
         value: i,
         label: i,
       }));
-
 export const tableFilterListConverter = (item) =>
   typeof item === "undefined"
     ? {

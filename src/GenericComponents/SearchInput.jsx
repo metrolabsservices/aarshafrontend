@@ -1,10 +1,11 @@
 import {
   ArrowUpOutlined,
   FileAddOutlined,
-  TransactionOutlined,
+  CheckCircleOutlined,
   PlusCircleTwoTone,
   SearchOutlined,
   SyncOutlined,
+  SecurityScanTwoTone,
 } from "@ant-design/icons";
 import {
   Affix,
@@ -18,7 +19,7 @@ import {
   Flex,
   FloatButton,
   Input,
-  Layout,
+  Modal,
   List,
   Popover,
   Result,
@@ -29,19 +30,25 @@ import {
   Table,
   Typography,
   message,
+  Form,
 } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import axiosInstance from "../services/axiosInstance";
 import { API } from "../services/api.constants";
 import {
+  arrayOfStringConverter,
+  formValidations,
   toCaptalizeString,
   toDateConverter,
   toDescriptionsItemsConvert,
 } from "./Modifiers";
-import { Backnavigationbtn } from "./Backnavigationbtn";
+import ReactDOM, { createRoot } from "react-dom";
 import { Titlecustom } from "./Titlecustom";
-
+import { useGuard } from "../dbHub/GuardContext";
+import { useNavigate } from "react-router-dom";
+import { ReceiptGenerater } from "./ReceiptGenerater";
+import { width } from "@fortawesome/free-solid-svg-icons/faEnvelopeCircleCheck";
 const Container = styled.div`
   & .selectorBox {
     margin-top: 20px;
@@ -60,145 +67,25 @@ const Container = styled.div`
     text-align: center;
   }
 `;
-const datae = [
-  {
-    boardType: "SSC",
-    classNo: "Class-1",
-    dueAmount: 9608,
-    feeCharge: [
-      { amount: 2916, dateOfCharged: "2023-03-07T23:49:11.000Z" },
-      { amount: 8375, dateOfCharged: "2023-08-21T02:39:16.000Z" },
-    ],
-    feeDetails: [
-      { dateOfPaid: "2023-10-22T15:13:01.000Z", paidAmount: 6188 },
-      { dateOfPaid: "2023-07-27T06:44:26.000Z", paidAmount: 6633 },
-    ],
-    id: 17,
-    isDeleted: false,
-    joiningDate: "2022-05-10T20:14:53.000Z",
-    name: "Mildred Lytle",
-    parentName: "Rudyard Lowcock",
-    parentPhnNo: "5681894273",
-    pastScore: 69,
-    schoolName: "First Trust Mega Cap AlphaDEX Fund",
-    studentStatus: "active",
-    subjectsTaken: ["English", "Maths"],
-    timing: "5:30",
-    whatsappNo: "3799477569",
-  },
-  {
-    boardType: "CBSE",
-    classNo: "Class-2",
-    dueAmount: 5000,
-    feeCharge: [],
-    feeDetails: [],
-    id: 18,
-    isDeleted: false,
-    joiningDate: "2023-01-15T10:00:00.000Z",
-    name: "John Doe",
-    parentName: "Jane Doe",
-    parentPhnNo: "1234567890",
-    pastScore: 85,
-    schoolName: "ABC School",
-    studentStatus: "active",
-    subjectsTaken: ["Science", "Social Studies"],
-    timing: "9:00",
-    whatsappNo: "9876543210",
-  },
-  {
-    boardType: "ICSE",
-    classNo: "Class-3",
-    dueAmount: 3000,
-    feeCharge: [{ amount: 3000, dateOfCharged: "2023-02-20T12:00:00.000Z" }],
-    feeDetails: [{ dateOfPaid: "2023-02-25T12:00:00.000Z", paidAmount: 3000 }],
-    id: 19,
-    isDeleted: false,
-    joiningDate: "2023-03-01T09:00:00.000Z",
-    name: "Alice Smith",
-    parentName: "Bob Smith",
-    parentPhnNo: "1112223333",
-    pastScore: 92,
-    schoolName: "XYZ School",
-    studentStatus: "active",
-    subjectsTaken: ["Mathematics", "English"],
-    timing: "10:30",
-    whatsappNo: "9998887777",
-  },
-  {
-    boardType: "SSC",
-    classNo: "Class-1",
-    dueAmount: 9608,
-    feeCharge: [
-      { amount: 2916, dateOfCharged: "2023-03-07T23:49:11.000Z" },
-      { amount: 8375, dateOfCharged: "2023-08-21T02:39:16.000Z" },
-    ],
-    feeDetails: [
-      { dateOfPaid: "2023-10-22T15:13:01.000Z", paidAmount: 6188 },
-      { dateOfPaid: "2023-07-27T06:44:26.000Z", paidAmount: 6633 },
-    ],
-    id: 17,
-    isDeleted: false,
-    joiningDate: "2022-05-10T20:14:53.000Z",
-    name: "Mildred Lytle",
-    parentName: "Rudyard Lowcock",
-    parentPhnNo: "5681894273",
-    pastScore: 69,
-    schoolName: "First Trust Mega Cap AlphaDEX Fund",
-    studentStatus: "active",
-    subjectsTaken: ["English", "Maths"],
-    timing: "5:30",
-    whatsappNo: "3799477569",
-  },
-  {
-    boardType: "CBSE",
-    classNo: "Class-2",
-    dueAmount: 5000,
-    feeCharge: [],
-    feeDetails: [],
-    id: 18,
-    isDeleted: false,
-    joiningDate: "2023-01-15T10:00:00.000Z",
-    name: "John Doe",
-    parentName: "Jane Doe",
-    parentPhnNo: "1234567890",
-    pastScore: 85,
-    schoolName: "ABC School",
-    studentStatus: "active",
-    subjectsTaken: ["Science", "Social Studies"],
-    timing: "9:00",
-    whatsappNo: "9876543210",
-  },
-  {
-    boardType: "ICSE",
-    classNo: "Class-3",
-    dueAmount: 3000,
-    feeCharge: [{ amount: 3000, dateOfCharged: "2023-02-20T12:00:00.000Z" }],
-    feeDetails: [{ dateOfPaid: "2023-02-25T12:00:00.000Z", paidAmount: 3000 }],
-    id: 19,
-    isDeleted: false,
-    joiningDate: "2023-03-01T09:00:00.000Z",
-    name: "Alice Smith",
-    parentName: "Bob Smith",
-    parentPhnNo: "1112223333",
-    pastScore: 92,
-    schoolName: "XYZ School",
-    studentStatus: "active",
-    subjectsTaken: ["Mathematics", "English"],
-    timing: "10:30",
-    whatsappNo: "9998887777",
-  },
-];
 
 export const SearchInput = () => {
+  const { dbInfo, updateDB } = useGuard();
+  const [form] = Form.useForm();
+  const nav = useNavigate();
   const [searchValue, setSearchValue] = useState("");
+  const [subjectSelect, setSubjectSelect] = useState({
+    subjectsTaken: [],
+    isError: true,
+  });
   const [payValue, setPayValue] = useState({
     value: "",
     errorMessage: "",
     isError: false,
   });
-  const [searchBox, setsearchBox] = useState("");
+  const [mySelectors, setSelectors] = useState({ subjects: [], modeOfPay: [] });
   const [windowsSize, setWindowSize] = useState({ width: 0, height: 0 });
   const [data, setData] = useState([]);
+  const [backUpInfo, setBackUPInfo] = useState({});
   const [pageData, setpageData] = useState({
     personalData: [],
     feeCharge: [
@@ -220,11 +107,8 @@ export const SearchInput = () => {
     isPageDataHide: true,
     isPaidClosed: false,
   });
+  const [isDefaultResult, setIsDefaultResult] = useState(false);
 
-  const apiUpdate = async () => {
-    console.log("update API called -----");
-    // await axiosInstance.put();
-  };
   useEffect(() => {
     const handleResize = () => {
       // console.log(window.innerWidth, window.innerHeight);
@@ -247,16 +131,24 @@ export const SearchInput = () => {
           setBolMang({ ...bolMang, isError: true, isLoaded: false });
         });
     };
-
+    setSelectors(
+      dbInfo.isSelectorReady
+        ? {
+            subjects: arrayOfStringConverter(dbInfo.selectors.subjectTypes),
+            modeOfPay: arrayOfStringConverter(dbInfo.selectors.paymentTypes),
+          }
+        : { subjects: [], modeOfPay: [] }
+    );
     apiCall();
     handleResize();
-
+    window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, [searchValue]);
 
   const onSearchHandler = (e) => {
+    setIsDefaultResult(true);
     setSearchValue(e);
     e.length > 0
       ? setBolMang({ ...bolMang, isListHide: false })
@@ -320,6 +212,7 @@ export const SearchInput = () => {
   const recordSelectedHandler = (e) => {
     console.log(e);
     const { feeCharge, feeDetails, ...rest } = e;
+    setBackUPInfo(rest);
     let descriptionData = Object.entries(rest).map((i) =>
       toDescriptionsItemsConvert(i)
     );
@@ -338,45 +231,59 @@ export const SearchInput = () => {
 
     setBolMang({ ...bolMang, isListHide: true, isPageDataHide: false });
   };
-  const payHandler = (e) => {
-    if (/^[0-9]+$/.test(e)) {
-      if (parseInt(e) <= pageData.dueAmount) {
-        setPayValue({ value: e, errorMessage: "", isError: false });
-      } else {
-        setPayValue({
-          value: e,
-          isError: true,
-          errorMessage: "Entered value is higher than due amount",
-        });
-      }
-    } else {
-      setPayValue({
-        value: e,
-        isError: true,
-        errorMessage: "Only Numeric Value are Valid",
+  const onFinish = async (e) => {
+    console.log("------- Form Data --------", e, backUpInfo);
+
+    const pack = {
+      data: {
+        paidAmount: parseInt(e.paidAmount),
+        subjectsTaken: e.subjectsTaken,
+        dateOfPaid: new Date().toISOString(),
+        studentId: backUpInfo.id,
+      },
+      info: {
+        id: backUpInfo.id,
+        name: backUpInfo.name,
+        modeOfPayment: e.modeOfPayment,
+        dueAmount: backUpInfo.dueAmount - parseInt(e.paidAmount),
+      },
+    };
+
+    console.log("Final Set----", pack);
+
+    await axiosInstance
+      .post(API.STUDENT_FEE_BY_ID, pack)
+      .then((result) => {
+        updateDB({ isPrintReady: true, printer: result.data });
+        nav("/fee");
+        // console.log(result);
+      })
+      .catch((err) => {
+        console.log(err);
       });
-    }
   };
-  const onPayClicked = (e) => {
-    console.log("on Pay Clicked -- ", payValue);
-    if (payValue.value === "") {
-      message.error("No Input, Check the Pay Input Entered");
-    } else if (payValue.isError) {
-      message.error("Invalid Input, Check the Pay Input Entered");
-    } else if (payValue.value.length > 0 && !payValue.isError) {
-      apiUpdate(e);
-    } else {
-      message.error("Unexpected Failure, Click REST button and try again");
-    }
+  const onFinishFailed = (e) => {
+    console.log("------ Failed Form ----------", e);
   };
   const resetHandler = (e) => {
     setSearchValue("");
+    setBackUPInfo({});
     setBolMang({
       isLoaded: true,
       isError: false,
       isListHide: true,
       isPageDataHide: true,
       isPaidClosed: false,
+    });
+    setIsDefaultResult(false);
+    setPayValue({
+      value: "",
+      errorMessage: "",
+      isError: false,
+    });
+    setSubjectSelect({
+      subjectsTaken: [],
+      isError: true,
     });
   };
 
@@ -419,7 +326,7 @@ export const SearchInput = () => {
                 />
               }
               renderItem={(item, index) => (
-                <>
+                <div id={index + "_list"}>
                   <Flex
                     justify="space-between"
                     align="center"
@@ -439,7 +346,7 @@ export const SearchInput = () => {
                     />
                   </Flex>
                   <Divider {...headerStyles.divider} />
-                </>
+                </div>
               )}
             />
           </div>
@@ -452,6 +359,86 @@ export const SearchInput = () => {
                 size="small"
                 items={pageData.personalData}
               />
+            </Col>
+            <Col span={24}>
+              <Flex justify="center" align="center" vertical={false}>
+                <Form
+                  style={windowsSize.width > 577 ? { width: "60%" } : {}}
+                  size={windowsSize.width > 577 ? "large" : "middle"}
+                  form={form}
+                  onFinish={onFinish}
+                  onFinishFailed={onFinishFailed}
+                  requiredMark={false}
+                >
+                  <Form.Item>
+                    <Titlecustom
+                      props={{
+                        level: 4,
+                        data: `Payment Form`,
+                        style: {
+                          textAlign: "center",
+                          margin: "0px",
+                          color: "blue",
+                          textDecoration: "underline",
+                        },
+                      }}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    label="Subjects"
+                    rules={[formValidations.Strings]}
+                    name="subjectsTaken"
+                  >
+                    <Select
+                      maxTagCount="responsive"
+                      mode="multiple"
+                      options={mySelectors.subjects}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    label="Amount"
+                    name="paidAmount"
+                    rules={[
+                      { required: true, message: "Amount is required" },
+                      {
+                        pattern: /^[1-9]\d*$/,
+                        message: "Only positive numerical values are allowed",
+                      },
+                      {
+                        validator: (_, value) =>
+                          formValidations
+                            .LessThanTarget(backUpInfo.dueAmount)
+                            .validator(_, value),
+                      },
+                      {
+                        validator: (_, value) =>
+                          formValidations.NonNegative.validator(_, value),
+                      },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Mode of Pay"
+                    name="modeOfPayment"
+                    rules={[formValidations.Strings]}
+                  >
+                    <Select
+                      maxTagCount="responsive"
+                      options={mySelectors.modeOfPay}
+                    />
+                  </Form.Item>
+                  <Form.Item>
+                    <Flex justify="space-around" align="center">
+                      <Button onClick={() => form.resetFields()}>Reset</Button>
+                      <Button type="primary" htmlType="submit">
+                        Submit
+                      </Button>
+                    </Flex>
+                  </Form.Item>
+                </Form>
+              </Flex>
             </Col>
             <Col {...respBreak}>
               <Table
@@ -529,7 +516,7 @@ export const SearchInput = () => {
                 size="small"
               />
             </Col>
-            <Col {...respBreak}>
+            {/* <Col {...respBreak}>
               <Titlecustom
                 props={{
                   level: 3,
@@ -541,33 +528,15 @@ export const SearchInput = () => {
                   },
                 }}
               />
-            </Col>
-            <Col {...respBreak}>
-              <Typography.Text
-                hidden={!payValue.isError}
-                type="danger"
-                strong
-                style={{ alignItems: "center" }}
-              >
-                {payValue.errorMessage}
-              </Typography.Text>
-              <Space.Compact block size="large">
-                <Input
-                  placeholder="Enter the amount"
-                  status={payValue.isError ? "error" : ""}
-                  value={payValue.value}
-                  onChange={(e) => payHandler(e.target.value)}
-                />
-                <Button
-                  icon={<TransactionOutlined />}
-                  style={{ backgroundColor: "#9df596" }}
-                  onClick={() => onPayClicked()}
-                >
-                  PAY
-                </Button>
-              </Space.Compact>
-            </Col>
+            </Col> */}
           </Row>
+        </div>
+        <div hidden={isDefaultResult}>
+          <Result
+            style={{ padding: "10px" }}
+            icon={<SecurityScanTwoTone />}
+            title="Please note only the search function triggers page changes. Thank you"
+          />
         </div>
       </Spin>
     </Container>

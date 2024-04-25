@@ -6,4 +6,8 @@ export const MedialFiles = {
     receiptionist: "",
     generaluser: "/MediaFiles/Icons/general_user.png",
   },
+  images: {
+    logoWithoutBackground: "/MediaFiles/Images/logoWithoutBackground.png",
+    paidStamp: "/MediaFiles/Images/paidStamp.png",
+  },
 };

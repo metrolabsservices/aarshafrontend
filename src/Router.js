@@ -14,6 +14,7 @@ import Login from "./Pages/LoginFlow/Login";
 import { Register } from "./Pages/LoginFlow/Register";
 import { LoginProfiles } from "./Pages/HomePage/LoginProfiles";
 import { StudentInfo } from "./Pages/HomePage/StudentInfo";
+import { ReceiptGenerater } from "./GenericComponents/ReceiptGenerater";
 
 export const Router = () => {
   return (
@@ -21,6 +22,7 @@ export const Router = () => {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/fee" element={<ReceiptGenerater />} />
         <Route path="/main" element={<AppLayout />}>
           {/* ++++++++++++++ Home page ++++++++++++++ */}
           <Route path="/main/home" element={<Dashboard />} />
