@@ -196,7 +196,7 @@ export const AppLayout = () => {
     </Container>
   );
   return (
-    <Container>
+    <Container id="AppLayoutBox">
       <Layout>
         <Header className="headerContainer">
           <Flex
@@ -238,7 +238,7 @@ export const AppLayout = () => {
             </Space>
           </Flex>
         </Header>
-        <Layout style={{ height: "auto" }}>
+        <Layout style={{}}>
           {isDisplayFooter ? (
             ""
           ) : (

@@ -35,6 +35,7 @@ export const Dashboard = () => {
   };
   useEffect(() => {
     window.addEventListener("resize", handleResize);
+    handleResize();
   }, []);
 
   const ButtonsList = [

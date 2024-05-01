@@ -1,6 +1,5 @@
 import { BrowserRouter, HashRouter, Route, Routes } from "react-router-dom";
 import { AppLayout } from "./AppLayout";
-import { Expensesindex } from "./Pages/Expensesindex";
 import { Libraryindex } from "./Pages/Libraryindex";
 import { Questionbankindex } from "./Pages/Questionbankindex";
 import { Studentindex } from "./Pages/StudentsDivison/Studentindex";
@@ -15,6 +14,7 @@ import { Register } from "./Pages/LoginFlow/Register";
 import { LoginProfiles } from "./Pages/HomePage/LoginProfiles";
 import { StudentInfo } from "./Pages/HomePage/StudentInfo";
 import { ReceiptGenerater } from "./GenericComponents/ReceiptGenerater";
+import { Expensesindex } from "./Pages/TransactionsPage/Expensesindex";
 
 export const Router = () => {
   return (
@@ -66,13 +66,13 @@ export const Router = () => {
             element={<Studentfeeform />}
           />
 
-          {/* ---------  Home page / Transaction Page ------- */}
+          {/* ---------   Transaction Page ------- */}
           <Route path="/main/transactionspage" element={<Expensesindex />} />
 
-          {/* ---------  Home page / Library Page ------- */}
+          {/* ---------  Library Page ------- */}
           <Route path="/main/librarypage" element={<Libraryindex />} />
 
-          {/* ---------  Home page / Question Bank Page ------- */}
+          {/* ---------  Question Bank Page ------- */}
           <Route
             path="/main/questionbankpage"
             element={<Questionbankindex />}
