@@ -25,16 +25,16 @@ const Container = styled.div`
   background-color: white;
   /* border: 1px solid red; */
   /* height: 100vh; */
-  overflow-y: scroll;
-  overflow-x: hidden;
+  overflow: hidden;
   & .navContainer {
     background-color: blueviolet;
     height: auto;
   }
   & .btnsSec {
+    width: 100%;
     background-color: whitesmoke;
-    padding: 20px;
-    border-radius: 20px;
+    padding: 20px 10px;
+    border-radius: 8px;
     margin-bottom: 20px;
   }
 `;
@@ -112,20 +112,20 @@ export const Expensesindex = () => {
       current: 1,
       pageSize: 3,
     });
-    setSearchData([]);
+    setSearchData({});
   };
 
   const ButtonsList = [
     {
       label: "Add Trnx",
       icon: <PlusOutlined />,
-      routeLink: "/main/home/studentinfo",
+      routeLink: "/main/transactionspage/addtrx",
       isDisabled: false,
     },
     {
       label: " Trnx Reports",
       icon: <BarChartOutlined />,
-      routeLink: "/main/home/masterselectors",
+      routeLink: "/main/transactionspage/trxchartspage",
       isDisabled: false,
     },
   ];
@@ -150,7 +150,7 @@ export const Expensesindex = () => {
     },
     { title: "Amount", dataIndex: "amount", key: "amount", width: 70 },
     {
-      title: "modeOfPayment",
+      title: "Payement",
       dataIndex: "modeOfPayment",
       key: "modeOfPayment",
       width: 130,
@@ -182,7 +182,7 @@ export const Expensesindex = () => {
   ];
   return (
     <Container>
-      <Row gutter={[20, 30]} wrap className="btnsSec">
+      <Row wrap className="btnsSec">
         {ButtonsList.map((i) => (
           <Col
             span={windowSize.width < 768 ? 12 : 6}

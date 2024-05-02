@@ -15,6 +15,7 @@ import { LoginProfiles } from "./Pages/HomePage/LoginProfiles";
 import { StudentInfo } from "./Pages/HomePage/StudentInfo";
 import { ReceiptGenerater } from "./GenericComponents/ReceiptGenerater";
 import { Expensesindex } from "./Pages/TransactionsPage/Expensesindex";
+import { TransactionForm } from "./Pages/TransactionsPage/TransactionForm";
 
 export const Router = () => {
   return (
@@ -68,6 +69,18 @@ export const Router = () => {
 
           {/* ---------   Transaction Page ------- */}
           <Route path="/main/transactionspage" element={<Expensesindex />} />
+
+          {/* ---------   Transaction Page  / add trx form------- */}
+          <Route
+            path="/main/transactionspage/addtrx"
+            element={<TransactionForm />}
+          />
+
+          {/* ---------   Transaction Page  / Transaction Charts------- */}
+          <Route
+            path="/main/transactionspage/trxchartspage"
+            element={<TransactionForm />}
+          />
 
           {/* ---------  Library Page ------- */}
           <Route path="/main/librarypage" element={<Libraryindex />} />
