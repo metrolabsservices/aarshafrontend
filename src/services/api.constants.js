@@ -1,5 +1,6 @@
 export const BASE_URL = "http://localhost:3000/";
 export const API = {
+  TRANSACTION_BY_ID: "transaction/",
   TRANSACTION_BY_ALL: "transaction/all/items",
   STUDENT_BY_ALL: "student/all/items",
   STUDENY_BY_FEE: "student/feedetails",

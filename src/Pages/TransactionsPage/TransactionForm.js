@@ -1,5 +1,7 @@
 import React from "react";
+import { useParams } from "react-router-dom";
 
 export const TransactionForm = () => {
-  return <div>TransactionForm</div>;
+  const { id } = useParams();
+  return <div>TransactionForm - {id}</div>;
 };
