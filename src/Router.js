@@ -72,13 +72,19 @@ export const Router = () => {
 
           {/* ---------   Transaction Page  / add trx form------- */}
           <Route
-            path="/main/transactionspage/addtrx"
+            path="/main/transactionspage/addtrx/:type"
             element={<TransactionForm />}
           />
 
           {/* ---------   Transaction Page  / Edit trx form------- */}
           <Route
-            path="/main/transactionspage/trxedit/:id"
+            path="/main/transactionspage/trxedit/:id/:type"
+            element={<TransactionForm />}
+          />
+
+          {/* ---------   Transaction Page  / View trx form------- */}
+          <Route
+            path="/main/transactionspage/trxview/:id/:type"
             element={<TransactionForm />}
           />
 

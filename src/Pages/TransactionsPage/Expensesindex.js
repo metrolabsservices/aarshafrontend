@@ -170,7 +170,7 @@ export const Expensesindex = () => {
     {
       label: "Add Trnx",
       icon: <PlusOutlined />,
-      routeLink: "/main/transactionspage/addtrx",
+      routeLink: "/main/transactionspage/addtrx/add",
       isDisabled: false,
     },
     {
@@ -188,7 +188,7 @@ export const Expensesindex = () => {
       title: "Trx Brief",
       dataIndex: "description",
       key: "description",
-      width: 150,
+      width: 200,
       responsive: ["lg"],
     },
     { title: "Category", dataIndex: "category", key: "category", width: 150 },
@@ -203,7 +203,7 @@ export const Expensesindex = () => {
       title: "Amount",
       dataIndex: "amount",
       key: "amount",
-      width: 70,
+      width: 100,
       render: (rec, _) => `₹ ${rec} /- `,
     },
     {
@@ -235,10 +235,14 @@ export const Expensesindex = () => {
         <Space size="small" wrap>
           <EditTwoTone
             onClick={() =>
-              navigate(`/main/transactionspage/trxedit/${record.id}`)
+              navigate(`/main/transactionspage/trxedit/${record.id}/edit`)
             }
           />
-          <EyeTwoTone />
+          <EyeTwoTone
+            onClick={() =>
+              navigate(`/main/transactionspage/trxedit/${record.id}/view`)
+            }
+          />
           <div hidden={false}>
             <Popconfirm
               title="are u sure ?"

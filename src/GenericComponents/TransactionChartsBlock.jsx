@@ -8,7 +8,7 @@ const Container = styled.div`
   border: 1px solid red;
 `;
 export const TransactionChartsBlock = ({ props }) => {
-  console.log(props);
+  //   console.log(props);
   return (
     <Container>
       <Flex justify="space-evenly" align="center" style={{ height: "100%" }}>
