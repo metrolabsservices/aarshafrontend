@@ -9,6 +9,7 @@ import {
   Image,
   Typography,
   Skeleton,
+  Affix,
 } from "antd";
 import { useRef, useState } from "react";
 import styled from "styled-components";
@@ -22,10 +23,14 @@ import { faPhoneVolume } from "@fortawesome/free-solid-svg-icons/faPhoneVolume";
 import React, { useEffect } from "react";
 import { VerticalAlignBottomOutlined } from "@ant-design/icons";
 import { useGuard } from "../dbHub/GuardContext";
+import { Backnavigationbtn } from "./Backnavigationbtn";
+import { Backbtn } from "./Backbtn";
+
 const Container = styled.div`
-  width: 900px;
-  height: 400px;
-  border: 1px solid navy;
+  width: 100%;
+  height: 100%;
+  border: 0.1rem solid black;
+  border-radius: 15px;
   display: block;
   position: relative;
   padding: 15px;
@@ -119,6 +124,11 @@ export const ReceiptGenerater = (props) => {
       label: "Due Amount",
       children: "NA",
     },
+    {
+      key: "11",
+      label: "Mode of Pay",
+      children: "-",
+    },
   ]);
   const [loading, setLoading] = useState(true);
   const { dbInfo, updateDB } = useGuard();
@@ -186,92 +196,118 @@ export const ReceiptGenerater = (props) => {
     },
   };
   return (
-    <Skeleton loading={loading}>
-      <Container ref={componentRef}>
-        <Row align="middle">
-          <Col span={5} className="logoMain">
+    <div>
+      <Affix offsetTop={0}>
+        <Flex justify="space-evenly" align="center" className="selectorBox">
+          <Backbtn />
+          <Typography.Title style={{ margin: "0px" }} level={4}>
+            Fee Reciept Generator
+          </Typography.Title>
+          <Button
+            icon={<VerticalAlignBottomOutlined />}
+            onClick={downloadPDF}
+            style={{
+              borderBlockColor: "white",
+              backgroundColor: "#000f80e8",
+              color: "white",
+            }}
+          >
+            Download
+          </Button>
+        </Flex>
+      </Affix>
+      <div style={{ maxHeight: "100%", overflowY: "auto" }}>
+        <Skeleton loading={loading}>
+          <Container ref={componentRef} style={{ marginTop: "15px" }}>
+            <Row align="middle">
+              <Col span={5} className="logoMain">
+                <Image
+                  src={MedialFiles.images.logoWithoutBackground}
+                  preview={false}
+                />
+              </Col>
+              <Col span={19}>
+                <Typography.Title className="pageHead">
+                  AARSHA TUITIONS
+                </Typography.Title>
+                <Typography.Paragraph className="pageCaption">
+                  Learning is Timeless
+                </Typography.Paragraph>
+              </Col>
+              <Col span={24} style={{ textAlign: "center" }}>
+                <Space direction="horizontal" align="baseline" size={10}>
+                  <FontAwesomeIcon icon={faLocationDot} />
+                  <Typography.Paragraph className="receiptAddress textSize">
+                    1<sup>st</sup> Floor, H No 5-300, Daya, Sriram Nagar Colony,
+                    Golden Temple Road, Manikonda, Hyderabad - 89
+                  </Typography.Paragraph>
+                </Space>
+              </Col>
+              <Col span={24}>
+                <Flex justify="space-between" align="center">
+                  <Space direction="horizontal" align="baseline" size={10}>
+                    <FontAwesomeIcon icon={faEnvelopeCircleCheck} />
+                    <Typography.Paragraph className="receiptContact textSize">
+                      Email - aarshatuitions@gmail.com
+                    </Typography.Paragraph>
+                  </Space>
+                  <Space direction="horizontal" align="baseline" size={10}>
+                    <FontAwesomeIcon icon={faPhoneVolume} />
+                    <Typography.Paragraph className="receiptContact textSize">
+                      Phone - +91 9392621532
+                    </Typography.Paragraph>
+                  </Space>
+                </Flex>
+              </Col>
+              <Col span={24}>
+                <Typography.Paragraph className="pageCaption receiptType">
+                  TUITION FEE
+                </Typography.Paragraph>
+              </Col>
+              <Col span={24}>
+                {myDescription([
+                  descriptionItems[0],
+                  descriptionItems[1],
+                  descriptionItems[2],
+                ])}
+                {myDescription([
+                  descriptionItems[3],
+                  descriptionItems[4],
+                  descriptionItems[5],
+                ])}
+                {myDescription([descriptionItems[6]])}
+                {myDescription([descriptionItems[7], descriptionItems[8]])}
+                {myDescription([descriptionItems[10]])}
+                {myDescription([descriptionItems[9]])}
+              </Col>
+            </Row>
             <Image
-              src={MedialFiles.images.logoWithoutBackground}
-              preview={false}
+              src={MedialFiles.images.paidStamp}
+              style={{
+                width: 150,
+                height: 150,
+                zIndex: 1,
+                position: "absolute",
+                right: -700,
+                bottom: -20,
+              }}
             />
-          </Col>
-          <Col span={19}>
-            <Typography.Title className="pageHead">
-              AARSHA TUTIONS
-            </Typography.Title>
-            <Typography.Paragraph className="pageCaption">
-              Learning is Timeless
-            </Typography.Paragraph>
-          </Col>
-          <Col span={24} style={{ textAlign: "center" }}>
-            <Space direction="horizontal" align="baseline" size={10}>
-              <FontAwesomeIcon icon={faLocationDot} />
-              <Typography.Paragraph className="receiptAddress textSize">
-                1<sup>st</sup>, H No 5-300, Daya, Sriram Nagar Colony, Golden
-                Temple Road, Manikonda, Hyderabad - 89
-              </Typography.Paragraph>
-            </Space>
-          </Col>
-          <Col span={24}>
-            <Flex justify="space-between" align="center">
-              <Space direction="horizontal" align="baseline" size={10}>
-                <FontAwesomeIcon icon={faEnvelopeCircleCheck} />
-                <Typography.Paragraph className="receiptContact textSize">
-                  Email - aarshatutions@gmail.com
-                </Typography.Paragraph>
-              </Space>
-              <Space direction="horizontal" align="baseline" size={10}>
-                <FontAwesomeIcon icon={faPhoneVolume} />
-                <Typography.Paragraph className="receiptContact textSize">
-                  Phone - +91 9392621532
-                </Typography.Paragraph>
-              </Space>
-            </Flex>
-          </Col>
-          <Col span={24}>
-            <Typography.Paragraph className="pageCaption receiptType">
-              TUTION FEE
-            </Typography.Paragraph>
-          </Col>
-          <Col span={24}>
-            {myDescription([
-              descriptionItems[0],
-              descriptionItems[1],
-              descriptionItems[2],
-            ])}
-            {myDescription([
-              descriptionItems[3],
-              descriptionItems[4],
-              descriptionItems[5],
-            ])}
-            {myDescription([descriptionItems[6]])}
-            {myDescription([descriptionItems[7], descriptionItems[8]])}
-            {myDescription([descriptionItems[9]])}
-          </Col>
-        </Row>
-        <Image
-          src={MedialFiles.images.paidStamp}
-          style={{
-            width: 150,
-            height: 150,
-            zIndex: 1,
-            position: "absolute",
-            right: -800,
-            bottom: -20,
-          }}
-        />
-      </Container>
-      <Button
-        icon={<VerticalAlignBottomOutlined />}
-        style={{
-          borderBlockColor: "white",
-          backgroundColor: "#000f80e8",
-          color: "white",
-        }}
-        onClick={downloadPDF}
-      >
-        Download
-      </Button>
-    </Skeleton>
+          </Container>
+          {/* <Button
+            icon={<VerticalAlignBottomOutlined />}
+            size="large"
+            style={{
+              borderBlockColor: "white",
+              backgroundColor: "#000f80e8",
+              color: "white",
+              marginTop: "15px",
+            }}
+            onClick={downloadPDF}
+          >
+            Download
+          </Button> */}
+        </Skeleton>
+      </div>
+    </div>
   );
 };

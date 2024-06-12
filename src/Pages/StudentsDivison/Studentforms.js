@@ -34,6 +34,7 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import { useGuard } from "../../dbHub/GuardContext";
+import { StepperInput } from "../../GenericComponents/StepperInput";
 
 const Container = styled.div`
   /* background-color: yellow; */
@@ -47,7 +48,6 @@ const Container = styled.div`
 export const Studentforms = () => {
   const [form] = Form.useForm();
   const { dbInfo } = useGuard();
-  const [isWhatsAppTicked, setIsWhatsAppTicked] = useState(true);
   const [windowsSize, setWindowSize] = useState({ width: 0, height: 0 });
   const [selectorsList, setselectorsList] = useState({
     boardTypes: [],
@@ -59,9 +59,10 @@ export const Studentforms = () => {
     transactionTypes: [],
     transactionsCategoryTypes: [],
   });
+  const [timing, setTiming] = useState("02:00");
   const nav = useNavigate();
+
   const onFinish = async (e) => {
-    console.log("submit action -- ", e);
     let data = {
       ...e,
       pastScore: parseInt(e.pastScore),
@@ -71,46 +72,62 @@ export const Studentforms = () => {
           dateOfCharged: new Date().toISOString(),
         },
       },
-      timing:
-        String(new Date(e.timing).getHours()) +
-        ":" +
-        String(new Date(e.timing).getMinutes()),
       joiningDate: new Date().toISOString(),
-      whatsappNo: e.whatsappStatus.status
-        ? e.parentPhnNo
-        : e.whatsappStatus.whatsappNo,
-      dueAmount: 0,
+      dueAmount: e.feeCharge,
       isDeleted: false,
     };
-
-    delete data.whatsappStatus;
-    console.log("modified data -", { data });
+    console.log("submit action -- ", e);
+    console.log("Change action -- ", data);
     await axiosInstance
       .post(API.STUDENT_BY_ID + "create", data)
       .then((res) => {
-        console.log(res);
-        Modal.confirm({
+        console.log(res.data);
+        let apiData = res.data.data;
+        Modal.success({
           title: `${res.data.response}`,
-          content: ` ${toCaptalizeString(data.name)} is registred with ${
-            res.data.data
+          content: ` ${toCaptalizeString(apiData.name)} is registered with ${
+            apiData.id
           } ID`,
           centered: true,
           keyboard: false,
-          icon: <CheckCircleTwoTone twoToneColor="green" />,
-          closeIcon: <CheckCircleTwoTone twoToneColor="green" />,
-          cancelText: "Add Student",
-          onCancel() {
-            form.resetFields();
-          },
-          cancelButtonProps: {
-            type: "primary",
-            ghost: true,
-            icon: <PlusOutlined />,
-          },
-          okText: "Home",
-          onOk() {
-            nav("/Home_B");
-          },
+          footer: [
+            <Button
+              key="home"
+              style={{ margin: "10px 5px 0px 5px" }}
+              type="primary"
+              onClick={() => {
+                nav("/main/studentpage");
+                Modal.destroyAll();
+              }}
+            >
+              Home
+            </Button>,
+            <Button
+              key="payment"
+              style={{ backgroundColor: "green", margin: "10px 5px 0px 5px" }}
+              type="primary"
+              onClick={() => {
+                console.log("Payment button clicked");
+                nav("/main/studentpage/feereceipt");
+                Modal.destroyAll();
+              }}
+            >
+              Payment
+            </Button>,
+            <Button
+              key="addStudent"
+              type="primary"
+              style={{ margin: "10px 5px 0px 5px" }}
+              ghost
+              icon={<PlusOutlined />}
+              onClick={() => {
+                form.resetFields();
+                Modal.destroyAll();
+              }}
+            >
+              Add Student
+            </Button>,
+          ],
         });
       })
       .catch((err) => {
@@ -118,6 +135,7 @@ export const Studentforms = () => {
         message.error(err.response.data.ErrorMessage);
       });
   };
+
   const onFinishFailed = (err) => {
     console.log(err);
   };
@@ -139,7 +157,6 @@ export const Studentforms = () => {
           }
     );
     const handleResize = () => {
-      // console.log(window.innerWidth, window.innerHeight);
       setWindowSize({
         width: window.innerWidth,
         height: window.innerHeight,
@@ -151,6 +168,7 @@ export const Studentforms = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
   const mySpans = {
     xs: 24,
     sm: 24,
@@ -282,12 +300,7 @@ export const Studentforms = () => {
               name="timing"
               rules={[formValidations.Strings]}
             >
-              <TimePicker
-                style={{ width: "100%" }}
-                format="HH:mm"
-                // defaultValue={dayjs("02:00", "HH:mm")}
-                showNow={false}
-              />
+              <StepperInput value={timing} onChange={setTiming} />
             </Form.Item>
           </Col>
           <Col {...fromAlign}>
@@ -300,7 +313,6 @@ export const Studentforms = () => {
             </Form.Item>
           </Col>
           <Col {...fromAlign}>
-            {" "}
             <Form.Item
               label="Parent Phn.No"
               name="parentPhnNo"
@@ -311,42 +323,11 @@ export const Studentforms = () => {
           </Col>
           <Col {...fromAlign}>
             <Form.Item
-              label="WhatsApp No Same as Phone No"
+              label="WhatsApp No"
               rules={[formValidations.Strings, formValidations.PhoneNumbers]}
-              // name={"whatsappStatus"}
+              name="whatsappNo"
             >
-              <Flex justify="space-evenly" style={{ height: "30px" }}>
-                <Form.Item name={["whatsappStatus", "status"]}>
-                  <Switch
-                    defaultChecked
-                    checked={isWhatsAppTicked}
-                    checkedChildren="YES"
-                    unCheckedChildren="NO"
-                    onChange={(e) => {
-                      // console.log(e);
-                      setIsWhatsAppTicked(e);
-                    }}
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  hidden={isWhatsAppTicked}
-                  name={["whatsappStatus", "whatsappNo"]}
-                  rules={
-                    isWhatsAppTicked
-                      ? [{ required: false }]
-                      : [
-                          formValidations.PhoneNumbers,
-                          {
-                            required: true,
-                            message: "WhatsApp No is required",
-                          },
-                        ]
-                  }
-                >
-                  <Input />
-                </Form.Item>
-              </Flex>
+              <Input />
             </Form.Item>
           </Col>
           <Col {...fromAlign}>

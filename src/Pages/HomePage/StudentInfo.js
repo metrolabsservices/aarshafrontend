@@ -180,7 +180,7 @@ export const StudentInfo = () => {
 
   return (
     <Container>
-      <Backnavigationbtn title={"Students Information"} />
+      <Backnavigationbtn title={"Students Payment Information"} />
       <div className="mainContainer">
         {bolMng.isError ? (
           <Result

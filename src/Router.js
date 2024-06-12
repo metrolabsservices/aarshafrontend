@@ -23,7 +23,7 @@ export const Router = () => {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/fee" element={<ReceiptGenerater />} />
+
         <Route path="/main" element={<AppLayout />}>
           {/* ++++++++++++++ Home page ++++++++++++++ */}
           <Route path="/main/home" element={<Dashboard />} />
@@ -65,6 +65,12 @@ export const Router = () => {
           <Route
             path="/main/studentpage/feereceipt"
             element={<Studentfeeform />}
+          />
+
+          {/* ---------  Student Page / Downloader feereceipt  ------- */}
+          <Route
+            path="/main/studentpage/feereceipt/fee"
+            element={<ReceiptGenerater />}
           />
 
           {/* ---------   Transaction Page ------- */}

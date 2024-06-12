@@ -1,6 +1,7 @@
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { Input, message } from "antd";
 import React from "react";
+import { useState } from "react";
 
 export const StepperInput = ({ value, onChange }) => {
   const stepperTimeList = [
@@ -45,6 +46,7 @@ export const StepperInput = ({ value, onChange }) => {
       status=""
       className="stepperInput"
       value={value}
+      defaultValue={value}
       readOnly
     />
   );

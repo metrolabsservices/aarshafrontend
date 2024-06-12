@@ -86,7 +86,7 @@ export const Studenteditforms = () => {
       .then((result) => {
         // console.log(result);
         message.success("Record Updated");
-        nav("/Home_B");
+        nav("/main/studentpage");
       })
       .catch((err) => {
         console.log(err);

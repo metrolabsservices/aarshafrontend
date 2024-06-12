@@ -25,6 +25,7 @@ import {
   EditTwoTone,
   EyeOutlined,
   EyeTwoTone,
+  FileProtectOutlined,
   FilterTwoTone,
 } from "@ant-design/icons";
 import { FilterBlock } from "../../GenericComponents/FilterBlock";
@@ -308,10 +309,13 @@ export const Studenttable = ({ props, outFunc }) => {
       fixed: "right",
       render: (_, record) => (
         <Space size="small" wrap>
-          <Link key={"edit"} to={`/Home_B/editstudent/${record.id}`}>
+          <Link key={"edit"} to={`/main/studentpage/editstudent/${record.id}`}>
             <EditTwoTone />
           </Link>
-          <Link key={"view"} to={`/Home_B/viewstudent/${record.id}`}>
+          <Link key={"view"} to={`/main/studentpage/viewstudent/${record.id}`}>
+            <FileProtectOutlined />
+          </Link>
+          <Link key={"view"} to={`/main/studentpage/viewstudent/${record.id}`}>
             <EyeTwoTone />
           </Link>
           <Popconfirm
