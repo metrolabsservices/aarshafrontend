@@ -84,6 +84,7 @@ export const formValidations = {
   },
 };
 
+// type : ISO / normal , data : Date formats ---- > x
 export const toDateConverter = (x) => {
   if (x.type === "ISO") {
     return new Date(x.data).toISOString();
@@ -111,6 +112,7 @@ export const arrayOfStringConverter = (item) =>
         value: i,
         label: i,
       }));
+
 export const tableFilterListConverter = (item) =>
   typeof item === "undefined"
     ? {
@@ -140,6 +142,7 @@ export const disabledPastTime = () => ({
   disabledSeconds: () => [0, 60],
 });
 
+// kranthiKumarNakka --- > Kranthi Kumar Nakka
 export const toCaptalizeString = (x) =>
   (x[0].toUpperCase() + x.slice(1))
     .split(/(?=[A-Z])/)
@@ -244,3 +247,53 @@ export const toObjectToPara = (prop) => {
   let x = "";
   return prop.map((i) => `${toCaptalizeString(i[0])} - ${i[1]}`).join(", ");
 };
+
+export const defaultDateFormatter = {
+  generalFormat_DD_MM_YYYY: "DD-MM-YYYY",
+};
+
+export const customDateRanges = [
+  {
+    label: "Today",
+    value: [dayjs().subtract(0, "days").startOf("days"), dayjs()],
+  },
+  {
+    label: "3 Days",
+    value: [dayjs().subtract(3, "days"), dayjs()],
+  },
+  {
+    label: "Present Week",
+    value: [dayjs().subtract(0, "week").startOf("week"), dayjs()],
+  },
+  {
+    label: "Last Week",
+    value: [
+      dayjs().subtract(1, "week").startOf("week"),
+      dayjs().subtract(1, "week").endOf("week"),
+    ],
+  },
+  {
+    label: "2 Weeks",
+    value: [dayjs().subtract(2, "weeks"), dayjs()],
+  },
+  {
+    label: "1 Month",
+    value: [dayjs().subtract(1, "month"), dayjs()],
+  },
+  {
+    label: "3 Months",
+    value: [dayjs().subtract(3, "months"), dayjs()],
+  },
+  {
+    label: "6 Months",
+    value: [dayjs().subtract(6, "months"), dayjs()],
+  },
+  {
+    label: "1 Year",
+    value: [dayjs().subtract(1, "year"), dayjs()],
+  },
+  {
+    label: "2 Years",
+    value: [dayjs().subtract(2, "years"), dayjs()],
+  },
+];

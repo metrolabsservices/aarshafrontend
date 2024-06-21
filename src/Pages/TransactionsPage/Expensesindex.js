@@ -44,11 +44,11 @@ const Container = styled.div`
     background-color: whitesmoke;
     padding: 20px 10px;
     border-radius: 8px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
   }
   & .secondBlock {
     overflow-y: scroll;
-    height: calc(100vh - 320px);
+    height: calc(100vh - 220px);
   }
 `;
 
@@ -107,7 +107,7 @@ export const Expensesindex = () => {
                 errorMessage: "",
               });
 
-          console.log("API result =---- ", result.data);
+          // console.log("API result =---- ", result.data);
         })
         .catch((err) => {
           console.log("API Error ----------", err);
@@ -272,7 +272,7 @@ export const Expensesindex = () => {
           />
         </Flex>
       ) : (
-        <Spin spinning={resultHandler.isLoaded} style={{ height: "100%" }}>
+        <Spin spinning={resultHandler.isLoaded}>
           <Row gutter={[5, 15]} wrap className="btnsSec">
             {ButtonsList.map((i) => (
               <Col
@@ -300,7 +300,7 @@ export const Expensesindex = () => {
 
             {/* <Col span={24}></Col> */}
           </Row>
-          <Row className="secondBlock">
+          <Row gutter={0} className="secondBlock">
             <Col span={24}>
               <TransactionChartsBlock />
             </Col>

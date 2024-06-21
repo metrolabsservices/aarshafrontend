@@ -77,6 +77,7 @@ export const Studentindex = () => {
         })
       : setChildProp({ ...childProp, searchValue: "", isSearchReset: true });
   };
+
   return (
     <Container>
       <Row
