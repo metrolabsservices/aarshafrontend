@@ -20,7 +20,7 @@ const Container = styled.div`
       0 4px 6px 0 rgb(93 100 148 / 20%);
   }
 `;
-export const NavBtn = ({ label, routeLink, icon, responsive }) => {
+export const NavBtn = ({ label, routeLink, icon, isDisabled, responsive }) => {
   useEffect(() => {}, []);
   const nav = useNavigate();
   return (
@@ -31,12 +31,18 @@ export const NavBtn = ({ label, routeLink, icon, responsive }) => {
             icon={icon}
             className="btnProp"
             shape="circle"
+            disabled={isDisabled}
             onClick={() => nav(routeLink)}
           />
           <Typography.Text strong>{label}</Typography.Text>
         </Space>
       ) : (
-        <Button className="btnProp" icon={icon} onClick={() => nav(routeLink)}>
+        <Button
+          className="btnProp"
+          icon={icon}
+          disabled={isDisabled}
+          onClick={() => nav(routeLink)}
+        >
           {label}
         </Button>
       )}

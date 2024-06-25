@@ -313,9 +313,6 @@ export const Studenttable = ({ props, outFunc }) => {
             <EditTwoTone />
           </Link>
           <Link key={"view"} to={`/main/studentpage/viewstudent/${record.id}`}>
-            <FileProtectOutlined />
-          </Link>
-          <Link key={"view"} to={`/main/studentpage/viewstudent/${record.id}`}>
             <EyeTwoTone />
           </Link>
           <Popconfirm

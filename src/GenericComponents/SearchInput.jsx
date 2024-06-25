@@ -66,6 +66,13 @@ const Container = styled.div`
   & .ant-table-thead > .ant-table-cell {
     text-align: center;
   }
+  & .paidTableColProp {
+    display: flex;
+    justify-content: center;
+  }
+  & .paidTableProp {
+    width: 65%;
+  }
 `;
 
 export const SearchInput = () => {
@@ -357,7 +364,7 @@ export const SearchInput = () => {
           </div>
         )}
         <div hidden={bolMang.isPageDataHide} {...pageDataStyles}>
-          <Row gutter={[20, 20]}>
+          <Row gutter={[20, 20]} align="middle">
             <Col span={24}>
               <Descriptions
                 bordered
@@ -366,7 +373,7 @@ export const SearchInput = () => {
               />
             </Col>
 
-            <Col {...respBreak}>
+            {/* <Col {...respBreak}>
               <Table
                 title={() => (
                   <Titlecustom
@@ -414,56 +421,8 @@ export const SearchInput = () => {
                 bordered={true}
                 size="small"
               />
-            </Col>
-            <Col {...respBreak}>
-              <Table
-                title={() => (
-                  <Titlecustom
-                    props={{
-                      level: 5,
-                      data: "Paid Details",
-                      style: {
-                        backgroundColor: "#ff000059",
-                        margin: 0,
-                        textAlign: "center",
-                        padding: "15px",
-                        borderRadius: "6px",
-                      },
-                    }}
-                  />
-                )}
-                // footer={() => (
-                //   <Titlecustom
-                //     props={{
-                //       level: 4,
-                //       data: `Total Payed - ₹ ${pageData.totalFeepaid} /-`,
-                //     }}
-                //   />
-                // )}
-                columns={[
-                  {
-                    title: "Date",
-                    dataIndex: "dateOfPaid",
-                    key: "dateOfPaid",
-                    align: "center",
-                    render: (rec, _) =>
-                      toDateConverter({ type: "normal", data: rec }),
-                  },
-                  {
-                    title: "Amount",
-                    dataIndex: "paidAmount",
-                    key: "paidAmount",
-                    align: "center",
+            </Col> */}
 
-                    render: (rec, _) => `₹ ${rec} /- `,
-                  },
-                ]}
-                dataSource={pageData.feeDetails}
-                pagination={false}
-                bordered={true}
-                size="small"
-              />
-            </Col>
             <Col span={24}>
               <Flex justify="center" align="center" vertical={false}>
                 <Form
@@ -543,6 +502,56 @@ export const SearchInput = () => {
                   </Form.Item>
                 </Form>
               </Flex>
+            </Col>
+            <Col span={24} className="paidTableColProp">
+              <Table
+                className="paidTableProp"
+                title={() => (
+                  <Titlecustom
+                    props={{
+                      level: 5,
+                      data: "Paid Details",
+                      style: {
+                        backgroundColor: "#ff000059",
+                        margin: 0,
+                        textAlign: "center",
+                        padding: "15px",
+                        borderRadius: "6px",
+                      },
+                    }}
+                  />
+                )}
+                // footer={() => (
+                //   <Titlecustom
+                //     props={{
+                //       level: 4,
+                //       data: `Total Payed - ₹ ${pageData.totalFeepaid} /-`,
+                //     }}
+                //   />
+                // )}
+                columns={[
+                  {
+                    title: "Date",
+                    dataIndex: "dateOfPaid",
+                    key: "dateOfPaid",
+                    align: "center",
+                    render: (rec, _) =>
+                      toDateConverter({ type: "normal", data: rec }),
+                  },
+                  {
+                    title: "Amount",
+                    dataIndex: "paidAmount",
+                    key: "paidAmount",
+                    align: "center",
+
+                    render: (rec, _) => `₹ ${rec} /- `,
+                  },
+                ]}
+                dataSource={pageData.feeDetails}
+                pagination={false}
+                bordered={true}
+                size="small"
+              />
             </Col>
             {/* <Col {...respBreak}>
               <Titlecustom

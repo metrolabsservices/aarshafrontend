@@ -5,8 +5,8 @@ export const CustomSelectorsList = async () =>
   await axiosInstance
     .get(API.SELECTORS_GET)
     .then((result) => {
-      return result.data;
+      return { response: true, data: result.data };
     })
     .catch((err) => {
-      return {};
+      return { response: false };
     });

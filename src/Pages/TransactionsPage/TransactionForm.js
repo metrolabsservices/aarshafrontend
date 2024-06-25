@@ -143,7 +143,13 @@ export const TransactionForm = () => {
 
     const selectorSemiApi = async () => {
       const mySelectors = await CustomSelectorsList();
-      setselectorsList(mySelectors);
+      mySelectors.response
+        ? setselectorsList(mySelectors.data)
+        : setbolMang({
+            ...bolMang,
+            isError: true,
+            errorMessage: "Unable to get Selectors - Backend Failed",
+          });
     };
 
     console.log(type, typeof type, id, typeof id);
@@ -319,7 +325,9 @@ export const TransactionForm = () => {
                       rules={[formValidations.Strings]}
                     >
                       <Select
-                        options={arrayOfStringConverter(["Debit", "Credit"])}
+                        options={arrayOfStringConverter(
+                          selectorsList.transactionMode
+                        )}
                       />
                     </Form.Item>
                   </Col>

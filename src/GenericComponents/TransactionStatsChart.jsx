@@ -1,4 +1,3 @@
-import { ArrowUpOutlined } from "@ant-design/icons";
 import {
   Card,
   Flex,
@@ -38,7 +37,7 @@ export const TransactionStatsChart = ({ props }) => {
   const [rawChartData, setRawChartData] = useState([]);
   const [error, setError] = useState(false);
   useEffect(() => {
-    console.log(props, "Stats", props?.length > 0);
+    // console.log(props, "Stats", props?.length > 0);
     if (props?.length > 0) {
       const totals = props.reduce(
         (acc, curr) => {

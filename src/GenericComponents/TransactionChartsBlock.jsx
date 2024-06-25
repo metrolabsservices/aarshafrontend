@@ -24,7 +24,7 @@ import { TransactionStatsChart } from "./TransactionStatsChart";
 
 const Container = styled.div`
   height: 55vh;
-  border: 1px solid red;
+  border: 1px solid white;
 
   & .alignment {
     display: flex;
@@ -66,7 +66,7 @@ export const TransactionChartsBlock = ({ props }) => {
       await axiosInstance
         .post(API.TRANSACTION_CHART, dateInput)
         .then((result) => {
-          console.log(result.data);
+          // console.log(result.data);
           setrawChartData(result.data);
           setPageHandler({
             isError: false,
