@@ -1,19 +1,19 @@
-import { Result, Tooltip } from "antd";
+import {  Result } from "antd";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 const Container = styled.div`
   width: 100%;
   height: 100%;
 `;
-export const PieChartBlock = ({ props }) => {
-  // const [rawChartData, setRawChartData] = useState([]);
 
-  const [piePrefilledData, setpiePrefilledData] = useState([
+export const PieChartBlock = ({ props }) => {
+  const [piePrefilledData, setPiePrefilledData] = useState([
     {
       name: "Debit",
       value: 0,
-      color: "#ee5965",
+      color: "#e73645",
     },
     {
       name: "Credit",
@@ -22,28 +22,35 @@ export const PieChartBlock = ({ props }) => {
     },
   ]);
   const [error, setError] = useState({ isError: true, errorMessage: "" });
+
   useEffect(() => {
-    // console.log(props, "Pie Data ");
-    if (typeof props !== "undefined") {
-      // setRawChartData(props);
-      console.log("right ------", props);
-      setpiePrefilledData([
-        {
-          ...piePrefilledData[0],
-          value: props.reduce((sum, item) => sum + item.debit, 0),
-        },
-        {
-          ...piePrefilledData[1],
-          value: props.reduce((sum, item) => sum + item.credit, 0),
-        },
-      ]);
-      setError({ isError: false, errorMessage: "" });
+    if (Array.isArray(props) && props.length > 0) {
+      const debitValue = props.reduce((sum, item) => sum + item.debit, 0);
+      const creditValue = props.reduce((sum, item) => sum + item.credit, 0);
+
+      if(debitValue === 0 && creditValue === 0 ){
+        setError({isError: true, errorMessage: "Pie Chart Not Displayed Due to Nullity of Debit and Credit Amounts"})
+      }else {
+        setPiePrefilledData([
+          {
+            name: "Debit",
+            value: debitValue,
+            color: "#ee5965",
+          },
+          {
+            name: "Credit",
+            value: creditValue,
+            color: "#a1e069ed",
+          },
+        ]);
+  
+        setError({ isError: false, errorMessage: "" });
+      }
+      
     } else if (typeof props === "undefined") {
-      console.log("bug ----");
-      setError({ isError: true, errorMessage: "In Complete Data Found" });
+      setError({ isError: true, errorMessage: "Incomplete Data Found" });
     } else {
-      console.log("failed -------");
-      setError({ isError: true, errorMessage: "Unable to show pie chart" });
+      setError({ isError: true, errorMessage: "Unable to Show Pie Chart" });
     }
   }, [props]);
 
@@ -55,7 +62,30 @@ export const PieChartBlock = ({ props }) => {
           style={{ padding: "10px 20px", margin: 0, height: "100%" }}
         />
       ) : (
-        <></>
+        <ResponsiveContainer width="100%" height={200}>
+          <PieChart>
+            <Pie
+              data={piePrefilledData}
+              dataKey="value"
+              nameKey="name"
+              cx="60%"
+              cy="60%"
+              outerRadius={80}
+              labelLine={false}
+              startAngle={90}
+              endAngle={-270}
+            >
+              {piePrefilledData.map((entry, index) => (
+                <Cell
+                  key={`${entry.name}-${index}pieCharts`}
+                  id={`pieChartData${index}`}
+                  fill={entry.color}
+                />
+              ))}
+            </Pie>
+            <Tooltip />
+          </PieChart>
+        </ResponsiveContainer>
       )}
     </Container>
   );

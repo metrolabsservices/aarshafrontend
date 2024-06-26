@@ -160,6 +160,7 @@ export const TransactionChartsBlock = ({ props }) => {
                       defaultDateFormatter.generalFormat_DD_MM_YYYY
                     ),
                   ]}
+                  allowClear={false} 
                 />
                 <Button onClick={onResetHandler}>Reset</Button>
               </Space.Compact>
