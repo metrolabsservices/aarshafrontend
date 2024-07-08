@@ -36,7 +36,7 @@ import { useForm } from "antd/es/form/Form";
 
 const Container = styled.div`
   background-color: white;
-  border: 1px solid red;
+  // border: 1px solid red;
   height: 100%;
   & .addSelector {
     font-size: x-large;

@@ -36,7 +36,7 @@ const Container = styled.div`
   /* height: calc(100vh - ); */
   align-items: center;
   align-content: center;
-  border: 1px solid red;
+  // border: 1px solid red;
   & .paginationProp {
     /* margin-top: 20; */
     /* background-color: #a020f0; */
