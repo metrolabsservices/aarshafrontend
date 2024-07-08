@@ -1,4 +1,4 @@
-export const BASE_URL = "http://aarsha.dev.vaaradhiitservices.com/api/";
+export const BASE_URL = "httpS://aarsha.dev.vaaradhiitservices.com/api/";
 export const API = {
   TRANSACTION_BY_ID: "transaction/",
   TRANSACTION_BY_ALL: "transaction/all/items",
